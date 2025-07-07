@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Restaurant Simulator Wireframes</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f8f8f8;
+      margin: 0;
+      padding: 0;
+    }
+    h1 {
+      text-align: center;
+      margin: 24px 0 8px 0;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+      gap: 32px;
+      padding: 32px;
+      max-width: 1800px;
+      margin: 0 auto;
+    }
+    .card {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .card h2 {
+      font-size: 1.1rem;
+      margin-bottom: 12px;
+      text-align: center;
+    }
+    .svg-container {
+      width: 100%;
+      overflow-x: auto;
+      display: flex;
+      justify-content: center;
+    }
+    svg {
+      background: #fafafa;
+      border: 1px solid #eee;
+      border-radius: 8px;
+      margin-bottom: 8px;
+      max-width: 100%;
+      height: auto;
+    }
+  </style>
+</head>
+<body>
+  <h1>Restaurant Simulator Wireframes</h1>
+  <div class="grid">
+    <div class="card">
+      <h2>Login / Signup Page</h2>
+      <div class="svg-container">
+        <!-- Login/Signup SVG -->
+        <svg width="400" height="420" viewBox="0 0 400 420" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="10" y="10" width="380" height="400" rx="16" fill="#fff" stroke="#bbb" stroke-width="2"/>
+          <text x="200" y="50" text-anchor="middle" font-size="22" font-family="Arial" fill="#333">Restaurant Simulator</text>
+          <rect x="170" y="70" width="60" height="60" rx="30" fill="#eee" stroke="#bbb"/>
+          <text x="200" y="110" text-anchor="middle" font-size="12" font-family="Arial" fill="#aaa">Logo</text>
+          <text x="60" y="150" font-size="14" font-family="Arial" fill="#333">Email:</text>
+          <rect x="120" y="138" width="220" height="28" rx="6" fill="#f7f7f7" stroke="#bbb"/>
+          <text x="60" y="190" font-size="14" font-family="Arial" fill="#333">Password:</text>
+          <rect x="120" y="178" width="220" height="28" rx="6" fill="#f7f7f7" stroke="#bbb"/>
+          <rect x="80" y="230" width="100" height="36" rx="8" fill="#e0e0e0" stroke="#bbb"/>
+          <text x="130" y="253" text-anchor="middle" font-size="15" font-family="Arial" fill="#333">Login</text>
+          <rect x="220" y="230" width="100" height="36" rx="8" fill="#e0e0e0" stroke="#bbb"/>
+          <text x="270" y="253" text-anchor="middle" font-size="15" font-family="Arial" fill="#333">Sign Up</text>
+          <text x="200" y="290" text-anchor="middle" font-size="13" font-family="Arial" fill="#888" style="text-decoration:underline;">Forgot password?</text>
+        </svg>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Portal Dashboard</h2>
+      <div class="svg-container">
+        <!-- Portal Dashboard SVG -->
+        <svg width="650" height="350" viewBox="0 0 650 350" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="10" y="10" width="630" height="330" rx="16" fill="#fff" stroke="#bbb" stroke-width="2"/>
+          <text x="30" y="40" font-size="15" font-family="Arial" fill="#333">User: johndoe</text>
+          <text x="570" y="40" font-size="15" font-family="Arial" fill="#333">Logout</text>
+          <rect x="30" y="60" width="160" height="32" rx="8" fill="#e0e0e0" stroke="#bbb"/>
+          <text x="110" y="82" text-anchor="middle" font-size="15" font-family="Arial" fill="#333">Create Simulation</text>
+          <text x="30" y="110" font-size="15" font-family="Arial" fill="#333">Simulations:</text>
+          <rect x="30" y="125" width="590" height="100" rx="8" fill="#f7f7f7" stroke="#bbb"/>
+          <text x="50" y="145" font-size="13" font-family="Arial" fill="#333">ID</text>
+          <text x="110" y="145" font-size="13" font-family="Arial" fill="#333">Name</text>
+          <text x="210" y="145" font-size="13" font-family="Arial" fill="#333">Owner</text>
+          <text x="370" y="145" font-size="13" font-family="Arial" fill="#333">Join</text>
+          <!-- Row 1 -->
+          <text x="50" y="170" font-size="13" font-family="Arial" fill="#333">1234</text>
+          <text x="110" y="170" font-size="13" font-family="Arial" fill="#333">Sim1</text>
+          <text x="210" y="170" font-size="13" font-family="Arial" fill="#333">John</text>
+          <rect x="340" y="155" width="90" height="22" rx="5" fill="#e0e0e0" stroke="#bbb"/>
+          <text x="385" y="171" text-anchor="middle" font-size="13" font-family="Arial" fill="#333">Instructor</text>
+          <rect x="440" y="155" width="60" height="22" rx="5" fill="#e0e0e0" stroke="#bbb"/>
+          <text x="470" y="171" text-anchor="middle" font-size="13" font-family="Arial" fill="#333">Team</text>
+          <!-- Row 2 -->
+          <text x="50" y="200" font-size="13" font-family="Arial" fill="#333">5678</text>
+          <text x="110" y="200" font-size="13" font-family="Arial" fill="#333">Sim2</text>
+          <text x="210" y="200" font-size="13" font-family="Arial" fill="#333">Alice</text>
+          <rect x="340" y="185" width="90" height="22" rx="5" fill="#e0e0e0" stroke="#bbb"/>
+          <text x="385" y="201" text-anchor="middle" font-size="13" font-family="Arial" fill="#333">Instructor</text>
+          <rect x="440" y="185" width="60" height="22" rx="5" fill="#e0e0e0" stroke="#bbb"/>
+          <text x="470" y="201" text-anchor="middle" font-size="13" font-family="Arial" fill="#333">Team</text>
+          <!-- Search -->
+          <rect x="30" y="240" width="200" height="28" rx="6" fill="#f7f7f7" stroke="#bbb"/>
+          <text x="130" y="260" text-anchor="middle" font-size="13" font-family="Arial" fill="#888">Search...</text>
+        </svg>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Join Simulation (Team)</h2>
+      <div class="svg-container">
+        <!-- Join Simulation SVG -->
+        <svg width="400" height="250" viewBox="0 0 400 250" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="10" y="10" width="380" height="230" rx="16" fill="#fff" stroke="#bbb" stroke-width="2"/>
+          <text x="200" y="40" text-anchor="middle" font-size="18" font-family="Arial" fill="#333">Join Simulation</text>
+          <text x="40" y="80" font-size="14" font-family="Arial" fill="#333">Simulation ID:</text>
+          <rect x="160" y="68" width="200" height="24" rx="6" fill="#f7f7f7" stroke="#bbb"/>
+          <text x="40" y="120" font-size="14" font-family="Arial" fill="#333">Team #:</text>
+          <rect x="160" y="108" width="200" height="24" rx="6" fill="#f7f7f7" stroke="#bbb"/>
+          <text x="40" y="160" font-size="14" font-family="Arial" fill="#333">Team Password:</text>
+          <rect x="160" y="148" width="200" height="24" rx="6" fill="#f7f7f7" stroke="#bbb"/>
+          <rect x="120" y="190" width="160" height="32" rx="8" fill="#e0e0e0" stroke="#bbb"/>
+          <text x="200" y="212" text-anchor="middle" font-size="15" font-family="Arial" fill="#333">Join</text>
+        </svg>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Instructor Dashboard</h2>
+      <div class="svg-container">
+        <svg width="600" height="350" viewBox="0 0 600 350" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="10" y="10" width="580" height="330" rx="16" fill="#fff" stroke="#bbb" stroke-width="2"/>
+          <text x="30" y="40" font-size="15" font-family="Arial" fill="#333">Simulation: Sim1</text>
+          <text x="250" y="40" font-size="15" font-family="Arial" fill="#333">Instructor: John</text>
+          <text x="520" y="40" font-size="15" font-family="Arial" fill="#333">Logout</text>
+          <rect x="30" y="60" width="110" height="28" rx="8" fill="#e0e0e0" stroke="#bbb"/>
+          <text x="85" y="80" text-anchor="middle" font-size="14" font-family="Arial" fill="#333">Start Turn</text>
+          <rect x="150" y="60" width="110" height="28" rx="8" fill="#e0e0e0" stroke="#bbb"/>
+          <text x="205" y="80" text-anchor="middle" font-size="14" font-family="Arial" fill="#333">End Turn</text>
+          <rect x="270" y="60" width="110" height="28" rx="8" fill="#e0e0e0" stroke="#bbb"/>
+          <text x="325" y="80" text-anchor="middle" font-size="14" font-family="Arial" fill="#333">Timer: 02:00</text>
+          <text x="30" y="120" font-size="15" font-family="Arial" fill="#333">Teams Connected:</text>
+          <rect x="30" y="130" width="540" height="60" rx="8" fill="#f7f7f7" stroke="#bbb"/>
+          <text x="50" y="150" font-size="13" font-family="Arial" fill="#333">Team Name</text>
+          <text x="200" y="150" font-size="13" font-family="Arial" fill="#333">Status</text>
+          <text x="350" y="150" font-size="13" font-family="Arial" fill="#333">Kick</text>
+          <text x="50" y="170" font-size="13" font-family="Arial" fill="#333">Team A</text>
+          <text x="200" y="170" font-size="13" font-family="Arial" fill="#333">Ready</text>
+          <rect x="340" y="157" width="40" height="18" rx="5" fill="#e0e0e0" stroke="#bbb"/>
+          <text x="360" y="170" text-anchor="middle" font-size="13" font-family="Arial" fill="#333">Kick</text>
+          <text x="50" y="190" font-size="13" font-family="Arial" fill="#333">Team B</text>
+          <text x="200" y="190" font-size="13" font-family="Arial" fill="#333">Waiting</text>
+          <rect x="340" y="177" width="40" height="18" rx="5" fill="#e0e0e0" stroke="#bbb"/>
+          <text x="360" y="190" text-anchor="middle" font-size="13" font-family="Arial" fill="#333">Kick</text>
+          <rect x="30" y="210" width="200" height="28" rx="8" fill="#e0e0e0" stroke="#bbb"/>
+          <text x="130" y="230" text-anchor="middle" font-size="14" font-family="Arial" fill="#333">View All Team Reports</text>
+          <rect x="250" y="210" width="200" height="28" rx="8" fill="#e0e0e0" stroke="#bbb"/>
+          <text x="350" y="230" text-anchor="middle" font-size="14" font-family="Arial" fill="#333">Create New Simulation</text>
+        </svg>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Team Dashboard</h2>
+      <div class="svg-container">
+        <svg width="500" height="400" viewBox="0 0 500 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="10" y="10" width="480" height="380" rx="16" fill="#fff" stroke="#bbb" stroke-width="2"/>
+          <text x="30" y="40" font-size="15" font-family="Arial" fill="#333">Simulation: Sim1</text>
+          <text x="250" y="40" font-size="15" font-family="Arial" fill="#333">Team: Team A</text>
+          <text x="420" y="40" font-size="15" font-family="Arial" fill="#333">Logout</text>
+          <text x="30" y="70" font-size="14" font-family="Arial" fill="#333">Restaurant Info:</text>
+          <text x="50" y="90" font-size="13" font-family="Arial" fill="#333">Name: The Bistro</text>
+          <text x="250" y="90" font-size="13" font-family="Arial" fill="#333">Balance Sheet: $10,000</text>
+          <text x="30" y="120" font-size="14" font-family="Arial" fill="#333">Menu:</text>
+          <rect x="30" y="130" width="440" height="60" rx="8" fill="#f7f7f7" stroke="#bbb"/>
+          <text x="50" y="150" font-size="13" font-family="Arial" fill="#333">Item</text>
+          <text x="120" y="150" font-size="13" font-family="Arial" fill="#333">Size</text>
+          <text x="200" y="150" font-size="13" font-family="Arial" fill="#333">Price</text>
+          <text x="280" y="150" font-size="13" font-family="Arial" fill="#333">Cost%</text>
+          <text x="50" y="170" font-size="13" font-family="Arial" fill="#333">Burger</text>
+          <text x="120" y="170" font-size="13" font-family="Arial" fill="#333">L</text>
+          <text x="200" y="170" font-size="13" font-family="Arial" fill="#333">$8</text>
+          <text x="280" y="170" font-size="13" font-family="Arial" fill="#333">30%</text>
+          <text x="50" y="190" font-size="13" font-family="Arial" fill="#333">Fries</text>
+          <text x="120" y="190" font-size="13" font-family="Arial" fill="#333">S</text>
+          <text x="200" y="190" font-size="13" font-family="Arial" fill="#333">$3</text>
+          <text x="280" y="190" font-size="13" font-family="Arial" fill="#333">20%</text>
+          <rect x="350" y="140" width="100" height="24" rx="6" fill="#e0e0e0" stroke="#bbb"/>
+          <text x="400" y="157" text-anchor="middle" font-size="13" font-family="Arial" fill="#333">Edit Menu</text>
+          <text x="30" y="220" font-size="14" font-family="Arial" fill="#333">Staffing:</text>
+          <rect x="110" y="208" width="100" height="24" rx="6" fill="#f7f7f7" stroke="#bbb"/>
+          <rect x="30" y="250" width="180" height="28" rx="8" fill="#e0e0e0" stroke="#bbb"/>
+          <text x="120" y="270" text-anchor="middle" font-size="14" font-family="Arial" fill="#333">Submit Decisions</text>
+          <text x="30" y="300" font-size="14" font-family="Arial" fill="#333">Reports:</text>
+          <rect x="30" y="310" width="120" height="24" rx="6" fill="#e0e0e0" stroke="#bbb"/>
+          <text x="90" y="327" text-anchor="middle" font-size="13" font-family="Arial" fill="#333">Current Turn</text>
+          <rect x="160" y="310" width="140" height="24" rx="6" fill="#e0e0e0" stroke="#bbb"/>
+          <text x="230" y="327" text-anchor="middle" font-size="13" font-family="Arial" fill="#333">Previous Turns ▼</text>
+          <rect x="320" y="310" width="150" height="24" rx="6" fill="#f7f7f7" stroke="#bbb"/>
+          <text x="395" y="327" text-anchor="middle" font-size="13" font-family="Arial" fill="#333">Revenue: $2,000   Profit: $500</text>
+        </svg>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Reports Page</h2>
+      <div class="svg-container">
+        <svg width="500" height="250" viewBox="0 0 500 250" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="10" y="10" width="480" height="230" rx="16" fill="#fff" stroke="#bbb" stroke-width="2"/>
+          <text x="30" y="40" font-size="15" font-family="Arial" fill="#333">Simulation: Sim1</text>
+          <text x="250" y="40" font-size="15" font-family="Arial" fill="#333">Reports</text>
+          <text x="420" y="40" font-size="15" font-family="Arial" fill="#333">Logout</text>
+          <rect x="30" y="60" width="180" height="24" rx="6" fill="#e0e0e0" stroke="#bbb"/>
+          <text x="120" y="77" text-anchor="middle" font-size="13" font-family="Arial" fill="#333">Select Team ▼</text>
+          <rect x="230" y="60" width="180" height="24" rx="6" fill="#e0e0e0" stroke="#bbb"/>
+          <text x="320" y="77" text-anchor="middle" font-size="13" font-family="Arial" fill="#333">Select Turn ▼</text>
+          <rect x="30" y="100" width="440" height="100" rx="8" fill="#f7f7f7" stroke="#bbb"/>
+          <text x="50" y="120" font-size="13" font-family="Arial" fill="#333">Revenue: $2,000   Profit: $500</text>
+          <text x="50" y="140" font-size="13" font-family="Arial" fill="#333">Menu: ...</text>
+          <text x="50" y="160" font-size="13" font-family="Arial" fill="#333">Staffing: ...</text>
+          <text x="50" y="180" font-size="13" font-family="Arial" fill="#333">Events: ...</text>
+        </svg>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Create Simulation</h2>
+      <div class="svg-container">
+        <svg width="500" height="350" viewBox="0 0 500 350" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="10" y="10" width="480" height="330" rx="16" fill="#fff" stroke="#bbb" stroke-width="2"/>
+          <text x="250" y="40" text-anchor="middle" font-size="18" font-family="Arial" fill="#333">Create New Simulation</text>
+          <text x="30" y="70" font-size="14" font-family="Arial" fill="#333">Simulation Name:</text>
+          <rect x="160" y="58" width="200" height="24" rx="6" fill="#f7f7f7" stroke="#bbb"/>
+          <text x="30" y="110" font-size="14" font-family="Arial" fill="#333">Number of Teams:</text>
+          <rect x="160" y="98" width="60" height="24" rx="6" fill="#f7f7f7" stroke="#bbb"/>
+          <text x="30" y="150" font-size="14" font-family="Arial" fill="#333">Team Setup:</text>
+          <rect x="30" y="160" width="440" height="60" rx="8" fill="#f7f7f7" stroke="#bbb"/>
+          <text x="50" y="180" font-size="13" font-family="Arial" fill="#333">#</text>
+          <text x="90" y="180" font-size="13" font-family="Arial" fill="#333">Name</text>
+          <text x="200" y="180" font-size="13" font-family="Arial" fill="#333">Password</text>
+          <text x="50" y="200" font-size="13" font-family="Arial" fill="#333">1</text>
+          <rect x="70" y="188" width="80" height="18" rx="4" fill="#fff" stroke="#bbb"/>
+          <rect x="180" y="188" width="80" height="18" rx="4" fill="#fff" stroke="#bbb"/>
+          <text x="50" y="220" font-size="13" font-family="Arial" fill="#333">2</text>
+          <rect x="70" y="208" width="80" height="18" rx="4" fill="#fff" stroke="#bbb"/>
+          <rect x="180" y="208" width="80" height="18" rx="4" fill="#fff" stroke="#bbb"/>
+          <rect x="30" y="230" width="100" height="24" rx="6" fill="#e0e0e0" stroke="#bbb"/>
+          <text x="80" y="247" text-anchor="middle" font-size="13" font-family="Arial" fill="#333">Add Team</text>
+          <rect x="140" y="230" width="120" height="24" rx="6" fill="#e0e0e0" stroke="#bbb"/>
+          <text x="200" y="247" text-anchor="middle" font-size="13" font-family="Arial" fill="#333">Remove Team</text>
+          <text x="30" y="270" font-size="14" font-family="Arial" fill="#333">Restaurant Profile:</text>
+          <rect x="170" y="258" width="120" height="24" rx="6" fill="#f7f7f7" stroke="#bbb"/>
+          <text x="230" y="275" text-anchor="middle" font-size="13" font-family="Arial" fill="#333">Import ▼</text>
+          <text x="30" y="310" font-size="14" font-family="Arial" fill="#333">Market Model:</text>
+          <rect x="170" y="298" width="120" height="24" rx="6" fill="#f7f7f7" stroke="#bbb"/>
+          <text x="230" y="315" text-anchor="middle" font-size="13" font-family="Arial" fill="#333">Import ▼</text>
+          <rect x="320" y="258" width="140" height="28" rx="8" fill="#e0e0e0" stroke="#bbb"/>
+          <text x="390" y="278" text-anchor="middle" font-size="14" font-family="Arial" fill="#333">Create Simulation</text>
+          <rect x="320" y="298" width="140" height="28" rx="8" fill="#e0e0e0" stroke="#bbb"/>
+          <text x="390" y="318" text-anchor="middle" font-size="14" font-family="Arial" fill="#333">Cancel</text>
+        </svg>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Admin Panel</h2>
+      <div class="svg-container">
+        <svg width="600" height="350" viewBox="0 0 600 350" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="10" y="10" width="580" height="330" rx="16" fill="#fff" stroke="#bbb" stroke-width="2"/>
+          <text x="30" y="40" font-size="15" font-family="Arial" fill="#333">Users</text>
+          <text x="120" y="40" font-size="15" font-family="Arial" fill="#333">Simulations</text>
+          <text x="250" y="40" font-size="15" font-family="Arial" fill="#333">Settings</text>
+          <text x="520" y="40" font-size="15" font-family="Arial" fill="#333">Logout</text>
+          <text x="30" y="70" font-size="14" font-family="Arial" fill="#333">Users:</text>
+          <rect x="30" y="80" width="540" height="60" rx="8" fill="#f7f7f7" stroke="#bbb"/>
+          <text x="50" y="100" font-size="13" font-family="Arial" fill="#333">Username</text>
+          <text x="150" y="100" font-size="13" font-family="Arial" fill="#333">Email</text>
+          <text x="300" y="100" font-size="13" font-family="Arial" fill="#333">Role</text>
+          <text x="400" y="100" font-size="13" font-family="Arial" fill="#333">Edit</text>
+          <text x="50" y="120" font-size="13" font-family="Arial" fill="#333">johndoe</text>
+          <text x="150" y="120" font-size="13" font-family="Arial" fill="#333">john@x.com</text>
+          <text x="300" y="120" font-size="13" font-family="Arial" fill="#333">Instructor</text>
+          <rect x="390" y="107" width="30" height="16" rx="4" fill="#e0e0e0" stroke="#bbb"/>
+          <text x="405" y="120" text-anchor="middle" font-size="13" font-family="Arial" fill="#333">✎</text>
+          <text x="50" y="140" font-size="13" font-family="Arial" fill="#333">team1</text>
+          <text x="150" y="140" font-size="13" font-family="Arial" fill="#333">t1@x.com</text>
+          <text x="300" y="140" font-size="13" font-family="Arial" fill="#333">Team</text>
+          <rect x="390" y="127" width="30" height="16" rx="4" fill="#e0e0e0" stroke="#bbb"/>
+          <text x="405" y="140" text-anchor="middle" font-size="13" font-family="Arial" fill="#333">✎</text>
+          <rect x="30" y="150" width="100" height="24" rx="6" fill="#e0e0e0" stroke="#bbb"/>
+          <text x="80" y="167" text-anchor="middle" font-size="13" font-family="Arial" fill="#333">Add User</text>
+          <rect x="140" y="150" width="140" height="24" rx="6" fill="#e0e0e0" stroke="#bbb"/>
+          <text x="210" y="167" text-anchor="middle" font-size="13" font-family="Arial" fill="#333">Delete Selected</text>
+          <text x="30" y="190" font-size="14" font-family="Arial" fill="#333">Simulations:</text>
+          <rect x="30" y="200" width="540" height="60" rx="8" fill="#f7f7f7" stroke="#bbb"/>
+          <text x="50" y="220" font-size="13" font-family="Arial" fill="#333">ID</text>
+          <text x="110" y="220" font-size="13" font-family="Arial" fill="#333">Name</text>
+          <text x="210" y="220" font-size="13" font-family="Arial" fill="#333">Owner</text>
+          <text x="320" y="220" font-size="13" font-family="Arial" fill="#333">Status</text>
+          <text x="400" y="220" font-size="13" font-family="Arial" fill="#333">Edit</text>
+          <text x="50" y="240" font-size="13" font-family="Arial" fill="#333">1234</text>
+          <text x="110" y="240" font-size="13" font-family="Arial" fill="#333">Sim1</text>
+          <text x="210" y="240" font-size="13" font-family="Arial" fill="#333">John</text>
+          <text x="320" y="240" font-size="13" font-family="Arial" fill="#333">Active</text>
+          <rect x="390" y="227" width="30" height="16" rx="4" fill="#e0e0e0" stroke="#bbb"/>
+          <text x="405" y="240" text-anchor="middle" font-size="13" font-family="Arial" fill="#333">✎</text>
+          <text x="50" y="260" font-size="13" font-family="Arial" fill="#333">5678</text>
+          <text x="110" y="260" font-size="13" font-family="Arial" fill="#333">Sim2</text>
+          <text x="210" y="260" font-size="13" font-family="Arial" fill="#333">Alice</text>
+          <text x="320" y="260" font-size="13" font-family="Arial" fill="#333">Ended</text>
+          <rect x="390" y="247" width="30" height="16" rx="4" fill="#e0e0e0" stroke="#bbb"/>
+          <text x="405" y="260" text-anchor="middle" font-size="13" font-family="Arial" fill="#333">✎</text>
+          <rect x="30" y="270" width="120" height="24" rx="6" fill="#e0e0e0" stroke="#bbb"/>
+          <text x="90" y="287" text-anchor="middle" font-size="13" font-family="Arial" fill="#333">Add Simulation</text>
+          <rect x="160" y="270" width="140" height="24" rx="6" fill="#e0e0e0" stroke="#bbb"/>
+          <text x="230" y="287" text-anchor="middle" font-size="13" font-family="Arial" fill="#333">Delete Selected</text>
+        </svg>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Analytics</h2>
+      <div class="svg-container">
+        <svg width="500" height="350" viewBox="0 0 500 350" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="10" y="10" width="480" height="330" rx="16" fill="#fff" stroke="#bbb" stroke-width="2"/>
+          <text x="30" y="40" font-size="15" font-family="Arial" fill="#333">Select Simulation ▼</text>
+          <text x="250" y="40" font-size="15" font-family="Arial" fill="#333">Select Team ▼</text>
+          <text x="30" y="80" font-size="14" font-family="Arial" fill="#333">Revenue Over Time</text>
+          <rect x="30" y="90" width="440" height="80" rx="8" fill="#f7f7f7" stroke="#bbb"/>
+          <polyline points="40,160 80,130 120,140 160,110 200,120 240,100 280,110 320,90 360,100 400,80" fill="none" stroke="#888" stroke-width="2"/>
+          <text x="30" y="190" font-size="14" font-family="Arial" fill="#333">Profit Margin</text>
+          <rect x="30" y="200" width="440" height="80" rx="8" fill="#f7f7f7" stroke="#bbb"/>
+          <rect x="50" y="260" width="20" height="20" fill="#bbb"/>
+          <rect x="90" y="240" width="20" height="40" fill="#bbb"/>
+          <rect x="130" y="250" width="20" height="30" fill="#bbb"/>
+          <rect x="170" y="230" width="20" height="50" fill="#bbb"/>
+          <rect x="210" y="255" width="20" height="25" fill="#bbb"/>
+          <rect x="250" y="245" width="20" height="35" fill="#bbb"/>
+          <rect x="290" y="260" width="20" height="20" fill="#bbb"/>
+          <rect x="330" y="250" width="20" height="30" fill="#bbb"/>
+          <rect x="370" y="240" width="20" height="40" fill="#bbb"/>
+          <rect x="410" y="255" width="20" height="25" fill="#bbb"/>
+          <rect x="30" y="300" width="120" height="28" rx="8" fill="#e0e0e0" stroke="#bbb"/>
+          <text x="90" y="320" text-anchor="middle" font-size="14" font-family="Arial" fill="#333">Export Chart</text>
+        </svg>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Export / Import</h2>
+      <div class="svg-container">
+        <svg width="500" height="250" viewBox="0 0 500 250" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="10" y="10" width="480" height="230" rx="16" fill="#fff" stroke="#bbb" stroke-width="2"/>
+          <text x="30" y="40" font-size="15" font-family="Arial" fill="#333">Export Simulation Data</text>
+          <rect x="30" y="50" width="200" height="24" rx="6" fill="#f7f7f7" stroke="#bbb"/>
+          <rect x="240" y="50" width="120" height="24" rx="6" fill="#e0e0e0" stroke="#bbb"/>
+          <text x="300" y="67" text-anchor="middle" font-size="13" font-family="Arial" fill="#333">Export as CSV</text>
+          <text x="30" y="100" font-size="15" font-family="Arial" fill="#333">Import Simulation Data</text>
+          <rect x="30" y="110" width="200" height="24" rx="6" fill="#f7f7f7" stroke="#bbb"/>
+          <rect x="240" y="110" width="120" height="24" rx="6" fill="#e0e0e0" stroke="#bbb"/>
+          <text x="300" y="127" text-anchor="middle" font-size="13" font-family="Arial" fill="#333">Import</text>
+          <rect x="30" y="170" width="100" height="28" rx="8" fill="#e0e0e0" stroke="#bbb"/>
+          <text x="80" y="190" text-anchor="middle" font-size="14" font-family="Arial" fill="#333">Back</text>
+        </svg>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Notifications</h2>
+      <div class="svg-container">
+        <svg width="400" height="250" viewBox="0 0 400 250" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="10" y="10" width="380" height="230" rx="16" fill="#fff" stroke="#bbb" stroke-width="2"/>
+          <rect x="30" y="30" width="60" height="24" rx="6" fill="#e0e0e0" stroke="#bbb"/>
+          <text x="60" y="47" text-anchor="middle" font-size="13" font-family="Arial" fill="#333">All</text>
+          <rect x="100" y="30" width="80" height="24" rx="6" fill="#e0e0e0" stroke="#bbb"/>
+          <text x="140" y="47" text-anchor="middle" font-size="13" font-family="Arial" fill="#333">Unread</text>
+          <rect x="190" y="30" width="100" height="24" rx="6" fill="#e0e0e0" stroke="#bbb"/>
+          <text x="240" y="47" text-anchor="middle" font-size="13" font-family="Arial" fill="#333">Settings</text>
+          <rect x="30" y="70" width="340" height="100" rx="8" fill="#f7f7f7" stroke="#bbb"/>
+          <text x="50" y="95" font-size="13" font-family="Arial" fill="#333">[!] Turn 3 has started.</text>
+          <text x="50" y="120" font-size="13" font-family="Arial" fill="#333">[!] Team A submitted decisions.</text>
+          <text x="50" y="145" font-size="13" font-family="Arial" fill="#333">[!] Simulation Sim1 ended.</text>
+          <rect x="30" y="190" width="160" height="28" rx="8" fill="#e0e0e0" stroke="#bbb"/>
+          <text x="110" y="210" text-anchor="middle" font-size="14" font-family="Arial" fill="#333">Mark All as Read</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
