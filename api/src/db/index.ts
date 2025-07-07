@@ -1,1 +1,5 @@
-// Placeholder for database connection, migrations, and seeders
+import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient();
+
+export default prisma;

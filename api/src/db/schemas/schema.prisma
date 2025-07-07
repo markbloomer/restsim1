@@ -1,0 +1,108 @@
+// Placeholder for Prisma schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Define your models here
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  username  String   @unique
+  password  String
+  role      UserRole @default(TEAM)
+  teams     Team[]
+  simulationsOwned Simulation[] @relation("SimulationOwner")
+  createdAt DateTime @default(now())
+}
+
+enum UserRole {
+  INSTRUCTOR
+  TEAM
+  ADMIN
+}
+
+model Simulation {
+  id            Int         @id @default(autoincrement())
+  name          String
+  ownerId       Int
+  owner         User        @relation("SimulationOwner", fields: [ownerId], references: [id], map: "fk_simulation_owner")
+  teams         Team[]
+  restaurant    Restaurant  @relation(fields: [restaurantId], references: [id], map: "fk_simulation_restaurant")
+  restaurantId  Int         @unique
+  market        Market      @relation(fields: [marketId], references: [id], map: "fk_simulation_market")
+  marketId      Int         @unique
+  turns         Turn[]
+  createdAt     DateTime    @default(now())
+}
+
+model Team {
+  id            Int         @id @default(autoincrement())
+  name          String
+  password      String
+  simulation    Simulation  @relation(fields: [simulationId], references: [id], map: "fk_team_simulation")
+  simulationId  Int
+  userId        Int
+  user          User        @relation(fields: [userId], references: [id], map: "fk_team_user")
+  menuItems     MenuItem[]
+  reports       Report[]
+  createdAt     DateTime    @default(now())
+}
+
+model Restaurant {
+  id            Int         @id @default(autoincrement())
+  name          String
+  background    String
+  balanceSheet  Json
+  menuItems     MenuItem[]
+  simulation    Simulation?
+}
+
+model MenuItem {
+  id            Int         @id @default(autoincrement())
+  name          String
+  size          String
+  price         Float
+  costPercent   Float
+  team          Team?       @relation(fields: [teamId], references: [id], map: "fk_menuitem_team")
+  teamId        Int?
+  restaurant    Restaurant? @relation(fields: [restaurantId], references: [id], map: "fk_menuitem_restaurant")
+  restaurantId  Int?
+}
+
+model Market {
+  id            Int         @id @default(autoincrement())
+  simulation    Simulation?
+  customerRevenue Float
+  inflation      Float
+  depreciation   Float
+  staffTurnover  Float
+  season         String
+  events         Json
+}
+
+model Turn {
+  id            Int         @id @default(autoincrement())
+  simulation    Simulation  @relation(fields: [simulationId], references: [id], map: "fk_turn_simulation")
+  simulationId  Int
+  number        Int
+  startTime     DateTime
+  endTime       DateTime
+  reports       Report[]
+}
+
+model Report {
+  id            Int         @id @default(autoincrement())
+  team          Team        @relation(fields: [teamId], references: [id], map: "fk_report_team")
+  teamId        Int
+  turn          Turn        @relation(fields: [turnId], references: [id], map: "fk_report_turn")
+  turnId        Int
+  finances      Json
+  createdAt     DateTime    @default(now())
+}
