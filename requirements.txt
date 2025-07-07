@@ -1,0 +1,41 @@
+
+Description
+
+A restaurant simulator where an Instructor and multiple Teams connect together and compete using a web interface to make financial decisions according to market conditions through the passage of time. The Instructor initiates the simulation by setting the starting conditions of the Teams, including the restaurant profile and market model, and controls the passage of time via Turns. Each Team has the ability to set the restaurant menu and make changes to various aspects of the restaurant operation between turns and the results are calculated and displayed as reports after each Turn.
+
+Requirements
+
+- Models
+	- User
+		- Email, username, password
+	- Restaurant
+		- Background information
+		- Balance sheet (assets, liabilities, etc.)
+		- Menu inputs (item name, size, price, cost percentage)
+	- Market
+		- Customer revenue (randomly generated)
+		- Impact of inflation, depreciation
+		- Staff turnover, seasonal fluctuations, unexpected events
+- Components
+	- Portal
+		- User login, logout, sign up
+		- Dashboard to manange simulations
+			- Create simulation (owner)
+			- List and search simulations
+			- Join simulation as Instructor (if owner) or as Team by id, team #, password
+	- Instructor
+		- Current position with Turn control with optional countdown timer
+		- View team connection dashboard (ability to kick)
+		- View all team reports (team inputs, team results)
+		- Create new simulation (unique id)
+			- Number of teams
+			- Team names and passwords
+			- Restaurant profile
+			- Market model
+		- Import restaurant profiles and market models
+	- Team
+		- Connect to simulation by id, team #, and password
+		- View connection status, team name, current position
+		- View restaurant background information, balance sheet, menu items
+		- Edit menu inputs, staffing
+		- View reports of calculated finances for current position and previous positions (selector)
