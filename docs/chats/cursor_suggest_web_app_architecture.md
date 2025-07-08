@@ -1,5 +1,5 @@
 # Suggest web app architecture
-_Exported on 7/8/2025 at 15:19:32 EDT from Cursor (1.2.1)_
+_Exported on 7/8/2025 at 16:10:16 EDT from Cursor (1.2.1)_
 
 ---
 
@@ -8370,4 +8370,544 @@ Let me know if you want to seed more data, add menu items, or further customize 
 ```shellscript
 npm run db:seed
 ```
+
+---
+
+**User**
+
+create readme with one line description, setup instructions, and listing the script commands
+
+---
+
+**Cursor**
+
+```markdown
+# Restaurant Simulator
+
+A web-based restaurant simulation game for instructors and teams to compete in financial decision-making.
+
+## Setup Instructions
+
+1. **Clone the repository**
+2. **Install dependencies**
+   ```sh
+   npm install
+   cd api && npm install
+   cd ../ui && npm install
+   ```
+3. **Start the database (PostgreSQL via Docker Compose)**
+   ```sh
+   npm run db:start
+   ```
+4. **Initialize the database schema**
+   ```sh
+   npm run db:init
+   ```
+5. **Seed the database with demo data**
+   ```sh
+   npm run db:seed
+   ```
+6. **Start the app in development mode**
+   ```sh
+   npm run dev
+   ```
+
+## Script Commands
+
+- `npm run dev` — Start both API and UI in development mode
+- `npm run start` — Start both API and UI in production mode
+- `npm run build` — Build both API and UI
+- `npm run db:start` — Start the PostgreSQL database (Docker Compose)
+- `npm run db:stop` — Stop the PostgreSQL database
+- `npm run db:init` — Initialize the database schema (Prisma migrations)
+- `npm run db:seed` — Seed the database with demo data
+- `npm run api:start` — Start the API in production mode
+- `npm run api:dev` — Start the API in development mode
+- `npm run api:build` — Build the API
+- `npm run ui:start` — Start the UI in production mode
+- `npm run ui:dev` — Start the UI in development mode
+- `npm run ui:build` — Build the UI
+
+---
+
+See the `/api/README.md` and `/ui/README.md` for more details on each package.
+
+```
+
+A `README.md` has been created with:
+
+- A one-line project description
+- Clear setup instructions
+- A list of all script commands for development, production, database, API, and UI
+
+This will help new developers quickly get started with your project.
+
+Let me know if you want to add more details, usage examples, or package-specific READMEs!
+
+---
+
+**User**
+
+simplify install dependencies for ui and api using single script from project root
+
+---
+
+**Cursor**
+
+```json
+{
+  "scripts": {
+    "install:all": "npm install && npm install --prefix api && npm install --prefix ui",
+    "dev": "npm-run-all --parallel api:dev ui:dev",
+    "start": "npm-run-all --parallel api:start ui:start",
+    "build": "npm-run-all api:build ui:build",
+    "test": "echo \"No tests specified\" && exit 0",
+    "db:start": "npm run db:start --prefix api",
+    "db:stop": "npm run db:stop --prefix api",
+    "db:seed": "npm run db:seed --prefix api",
+    "db:init": "npm run db:init --prefix api",
+    "api:start": "cd api && npm start",
+    "api:dev": "cd api && npm run dev",
+    "api:build": "cd api && npm run build",
+    "ui:start": "cd ui && npm start",
+    "ui:dev": "cd ui && npm run dev",
+    "ui:build": "cd ui && npm run build"
+  },
+  "devDependencies": {
+    "npm-run-all": "^4.1.5"
+  }
+}
+
+```
+
+You now have a single script to install all dependencies for the root, API, and UI:
+
+```sh
+npm run install:all
+```
+
+This will install everything needed for your project in one step from the project root.
+
+Let me know if you want to further automate setup or add postinstall hooks!
+
+```shellscript
+npm run install:all
+```
+
+---
+
+**User**
+
+update readme
+
+---
+
+**Cursor**
+
+```markdown
+# Restaurant Simulator
+
+A web-based restaurant simulation game for instructors and teams to compete in financial decision-making.
+
+## Setup Instructions
+
+1. **Clone the repository**
+2. **Install dependencies**
+   ```sh
+   npm run install:all
+   ```
+3. **Start the database (PostgreSQL via Docker Compose)**
+   ```sh
+   npm run db:start
+   ```
+4. **Initialize the database schema**
+   ```sh
+   npm run db:init
+   ```
+5. **Seed the database with demo data**
+   ```sh
+   npm run db:seed
+   ```
+6. **Start the app in development mode**
+   ```sh
+   npm run dev
+   ```
+
+## Script Commands
+
+- `npm run install:all` — Install dependencies in root, api, and ui
+- `npm run dev` — Start both API and UI in development mode
+- `npm run start` — Start both API and UI in production mode
+- `npm run build` — Build both API and UI
+- `npm run db:start` — Start the PostgreSQL database (Docker Compose)
+- `npm run db:stop` — Stop the PostgreSQL database
+- `npm run db:init` — Initialize the database schema (Prisma migrations)
+- `npm run db:seed` — Seed the database with demo data
+- `npm run api:start` — Start the API in production mode
+- `npm run api:dev` — Start the API in development mode
+- `npm run api:build` — Build the API
+- `npm run ui:start` — Start the UI in production mode
+- `npm run ui:dev` — Start the UI in development mode
+- `npm run ui:build` — Build the UI
+
+---
+
+See the `/api/README.md` and `/ui/README.md` for more details on each package.
+
+```
+
+The README has been updated:
+
+- The setup instructions now use `npm run install:all` to install dependencies for root, API, and UI in one step.
+- The script command list includes `npm run install:all` for clarity.
+
+This makes onboarding and setup even easier for new developers.
+
+Let me know if you want to add more usage notes, environment variable info, or anything else!
+
+---
+
+**User**
+
+revert install script modifications
+
+---
+
+**Cursor**
+
+```json
+{
+  "scripts": {
+    "dev": "npm-run-all --parallel api:dev ui:dev",
+    "start": "npm-run-all --parallel api:start ui:start",
+    "build": "npm-run-all api:build ui:build",
+    "test": "echo \"No tests specified\" && exit 0",
+    "db:start": "npm run db:start --prefix api",
+    "db:stop": "npm run db:stop --prefix api",
+    "db:seed": "npm run db:seed --prefix api",
+    "db:init": "npm run db:init --prefix api",
+    "api:start": "cd api && npm start",
+    "api:dev": "cd api && npm run dev",
+    "api:build": "cd api && npm run build",
+    "ui:start": "cd ui && npm start",
+    "ui:dev": "cd ui && npm run dev",
+    "ui:build": "cd ui && npm run build"
+  },
+  "devDependencies": {
+    "npm-run-all": "^4.1.5"
+  }
+}
+
+```
+
+The `install:all` script has been removed from your root `package.json`.  
+You can now install dependencies in each package (`api`, `ui`, and root) as before, using `npm install` in each directory.
+
+Let me know if you want to update the README or revert any other changes!
+
+---
+
+**User**
+
+update readme
+
+---
+
+**Cursor**
+
+```markdown
+# Restaurant Simulator
+
+A web-based restaurant simulation game for instructors and teams to compete in financial decision-making.
+
+## Setup Instructions
+
+1. **Clone the repository**
+2. **Install dependencies**
+   ```sh
+   npm install
+   cd api && npm install
+   cd ../ui && npm install
+   ```
+3. **Start the database (PostgreSQL via Docker Compose)**
+   ```sh
+   npm run db:start
+   ```
+4. **Initialize the database schema**
+   ```sh
+   npm run db:init
+   ```
+5. **Seed the database with demo data**
+   ```sh
+   npm run db:seed
+   ```
+6. **Start the app in development mode**
+   ```sh
+   npm run dev
+   ```
+
+## Script Commands
+
+- `npm run dev` — Start both API and UI in development mode
+- `npm run start` — Start both API and UI in production mode
+- `npm run build` — Build both API and UI
+- `npm run db:start` — Start the PostgreSQL database (Docker Compose)
+- `npm run db:stop` — Stop the PostgreSQL database
+- `npm run db:init` — Initialize the database schema (Prisma migrations)
+- `npm run db:seed` — Seed the database with demo data
+- `npm run api:start` — Start the API in production mode
+- `npm run api:dev` — Start the API in development mode
+- `npm run api:build` — Build the API
+- `npm run ui:start` — Start the UI in production mode
+- `npm run ui:dev` — Start the UI in development mode
+- `npm run ui:build` — Build the UI
+
+---
+
+See the `/api/README.md` and `/ui/README.md` for more details on each package.
+
+```
+
+The README has been updated:
+
+- The setup instructions now show the step-by-step install process for root, `api`, and `ui` using `npm install` in each directory.
+- The `install:all` script has been removed from the script commands list.
+
+Let me know if you want to make any further changes or add more documentation!
+
+---
+
+**User**
+
+cd to root dir after installs
+
+---
+
+**Cursor**
+
+```markdown
+# Restaurant Simulator
+
+A web-based restaurant simulation game for instructors and teams to compete in financial decision-making.
+
+## Setup Instructions
+
+1. **Clone the repository**
+2. **Install dependencies**
+   ```sh
+   npm install
+   cd api && npm install && cd ..
+   cd ui && npm install && cd ..
+   ```
+3. **Start the database (PostgreSQL via Docker Compose)**
+   ```sh
+   npm run db:start
+   ```
+4. **Initialize the database schema**
+   ```sh
+   npm run db:init
+   ```
+5. **Seed the database with demo data**
+   ```sh
+   npm run db:seed
+   ```
+6. **Start the app in development mode**
+   ```sh
+   npm run dev
+   ```
+
+## Script Commands
+
+- `npm run dev` — Start both API and UI in development mode
+- `npm run start` — Start both API and UI in production mode
+- `npm run build` — Build both API and UI
+- `npm run db:start` — Start the PostgreSQL database (Docker Compose)
+- `npm run db:stop` — Stop the PostgreSQL database
+- `npm run db:init` — Initialize the database schema (Prisma migrations)
+- `npm run db:seed` — Seed the database with demo data
+- `npm run api:start` — Start the API in production mode
+- `npm run api:dev` — Start the API in development mode
+- `npm run api:build` — Build the API
+- `npm run ui:start` — Start the UI in production mode
+- `npm run ui:dev` — Start the UI in development mode
+- `npm run ui:build` — Build the UI
+
+---
+
+See the `/api/README.md` and `/ui/README.md` for more details on each package.
+
+```
+
+The README now instructs users to return to the project root after installing dependencies in `api` and `ui`:
+
+```sh
+npm install
+cd api && npm install && cd ..
+cd ui && npm install && cd ..
+```
+
+This ensures users are always in the correct directory for subsequent setup steps.
+
+Let me know if you want to further clarify or improve the setup instructions!
+
+```shellscript
+npm install
+cd api && npm install && cd ..
+cd ui && npm install && cd ..
+```
+
+---
+
+**User**
+
+add .env info to readme
+
+---
+
+**Cursor**
+
+```markdown
+# Restaurant Simulator
+
+A web-based restaurant simulation game for instructors and teams to compete in financial decision-making.
+
+## Setup Instructions
+
+1. **Clone the repository**
+2. **Install dependencies**
+   ```sh
+   npm install
+   cd api && npm install && cd ..
+   cd ui && npm install && cd ..
+   ```
+3. **Create .env files**
+   - In `/api/.env`:
+     ```env
+     DATABASE_URL="postgresql://postgres:mysecretpassword@localhost:5432/restsim?schema=public"
+     JWT_SECRET="your_jwt_secret_here"
+     ```
+   - In `/ui/.env` (optional, for custom API URL):
+     ```env
+     REACT_APP_API_URL=http://localhost:4000
+     ```
+4. **Start the database (PostgreSQL via Docker Compose)**
+   ```sh
+   npm run db:start
+   ```
+5. **Initialize the database schema**
+   ```sh
+   npm run db:init
+   ```
+6. **Seed the database with demo data**
+   ```sh
+   npm run db:seed
+   ```
+7. **Start the app in development mode**
+   ```sh
+   npm run dev
+   ```
+
+## Script Commands
+
+- `npm run dev` — Start both API and UI in development mode
+- `npm run start` — Start both API and UI in production mode
+- `npm run build` — Build both API and UI
+- `npm run db:start` — Start the PostgreSQL database (Docker Compose)
+- `npm run db:stop` — Stop the PostgreSQL database
+- `npm run db:init` — Initialize the database schema (Prisma migrations)
+- `npm run db:seed` — Seed the database with demo data
+- `npm run api:start` — Start the API in production mode
+- `npm run api:dev` — Start the API in development mode
+- `npm run api:build` — Build the API
+- `npm run ui:start` — Start the UI in production mode
+- `npm run ui:dev` — Start the UI in development mode
+- `npm run ui:build` — Build the UI
+
+---
+
+See the `/api/README.md` and `/ui/README.md` for more details on each package.
+
+```
+
+The README now includes a section on required `.env` files:
+
+- Example for `/api/.env` (with `DATABASE_URL` and `JWT_SECRET`)
+- Example for `/ui/.env` (with `REACT_APP_API_URL`)
+
+This will help new developers set up their environment variables correctly.
+
+Let me know if you want to add more details, such as recommended values for production, or further clarify environment setup!
+
+---
+
+**User**
+
+remove instructions for REACT_APP_API_URL
+
+---
+
+**Cursor**
+
+```markdown
+# Restaurant Simulator
+
+A web-based restaurant simulation game for instructors and teams to compete in financial decision-making.
+
+## Setup Instructions
+
+1. **Clone the repository**
+2. **Install dependencies**
+   ```sh
+   npm install
+   cd api && npm install && cd ..
+   cd ui && npm install && cd ..
+   ```
+3. **Create .env files**
+   - In `/api/.env`:
+     ```env
+     DATABASE_URL="postgresql://postgres:mysecretpassword@localhost:5432/restsim?schema=public"
+     JWT_SECRET="your_jwt_secret_here"
+     ```
+4. **Start the database (PostgreSQL via Docker Compose)**
+   ```sh
+   npm run db:start
+   ```
+5. **Initialize the database schema**
+   ```sh
+   npm run db:init
+   ```
+6. **Seed the database with demo data**
+   ```sh
+   npm run db:seed
+   ```
+7. **Start the app in development mode**
+   ```sh
+   npm run dev
+   ```
+
+## Script Commands
+
+- `npm run dev` — Start both API and UI in development mode
+- `npm run start` — Start both API and UI in production mode
+- `npm run build` — Build both API and UI
+- `npm run db:start` — Start the PostgreSQL database (Docker Compose)
+- `npm run db:stop` — Stop the PostgreSQL database
+- `npm run db:init` — Initialize the database schema (Prisma migrations)
+- `npm run db:seed` — Seed the database with demo data
+- `npm run api:start` — Start the API in production mode
+- `npm run api:dev` — Start the API in development mode
+- `npm run api:build` — Build the API
+- `npm run ui:start` — Start the UI in production mode
+- `npm run ui:dev` — Start the UI in development mode
+- `npm run ui:build` — Build the UI
+
+---
+
+See the `/api/README.md` and `/ui/README.md` for more details on each package.
+
+```
+
+The README no longer includes instructions for the `REACT_APP_API_URL` variable in the `/ui/.env` file.
+
+Let me know if you want to further clarify environment setup or add any other configuration notes!
 

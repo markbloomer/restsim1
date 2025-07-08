@@ -11,19 +11,25 @@ A web-based restaurant simulation game for instructors and teams to compete in f
    cd api && npm install && cd ..
    cd ui && npm install && cd ..
    ```
-3. **Start the database (PostgreSQL via Docker Compose)**
+3. **Create .env files**
+   - In `/api/.env`:
+     ```env
+     DATABASE_URL="postgresql://postgres:mysecretpassword@localhost:5432/restsim?schema=public"
+     JWT_SECRET="your_jwt_secret_here"
+     ```
+4. **Start the database (PostgreSQL via Docker Compose)**
    ```sh
    npm run db:start
    ```
-4. **Initialize the database schema**
+5. **Initialize the database schema**
    ```sh
    npm run db:init
    ```
-5. **Seed the database with demo data**
+6. **Seed the database with demo data**
    ```sh
    npm run db:seed
    ```
-6. **Start the app in development mode**
+7. **Start the app in development mode**
    ```sh
    npm run dev
    ```
