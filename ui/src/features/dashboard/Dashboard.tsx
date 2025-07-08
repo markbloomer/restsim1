@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { API_BASE_URL } from '../../../config';
 
 const Dashboard: React.FC = () => {
@@ -6,6 +7,7 @@ const Dashboard: React.FC = () => {
   const [simulations, setSimulations] = useState<{id: number, name: string, owner: string}[]>([]);
   const [loading, setLoading] = useState(true);
   const user = { username: 'johndoe' };
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchSimulations = async () => {
@@ -33,11 +35,16 @@ const Dashboard: React.FC = () => {
     String(sim.id).includes(search)
   );
 
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    navigate('/login');
+  };
+
   return (
     <div style={{ maxWidth: 700, margin: '40px auto', padding: 24, border: '1px solid #ccc', borderRadius: 8 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
         <span><b>User:</b> {user.username}</span>
-        <button>Logout</button>
+        <button onClick={handleLogout}>Logout</button>
       </div>
       <button style={{ marginBottom: 16 }}>Create Simulation</button>
       <div style={{ marginBottom: 16 }}>
