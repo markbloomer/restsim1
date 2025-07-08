@@ -1,16 +1,18 @@
 {
   "scripts": {
-    "dev": "npm-run-all --parallel api:dev ui:start",
+    "dev": "npm-run-all --parallel api:dev ui:dev",
     "start": "npm-run-all --parallel api:start ui:start",
     "build": "npm-run-all api:build ui:build",
     "test": "echo \"No tests specified\" && exit 0",
-    "db:start": "docker-compose up -d",
-    "db:stop": "docker-compose down",
-    "db:seed": "npx ts-node api/src/db/seeders/seed.ts",
+    "db:start": "npm run db:start --prefix api",
+    "db:stop": "npm run db:stop --prefix api",
+    "db:seed": "npm run db:seed --prefix api",
+    "db:init": "npm run db:init --prefix api",
     "api:start": "cd api && npm start",
     "api:dev": "cd api && npm run dev",
     "api:build": "cd api && npm run build",
     "ui:start": "cd ui && npm start",
+    "ui:dev": "cd ui && npm run dev",
     "ui:build": "cd ui && npm run build"
   },
   "devDependencies": {

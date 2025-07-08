@@ -1,5 +1,5 @@
 # Suggest web app architecture
-_Exported on 7/7/2025 at 17:18:12 EDT from Cursor (1.2.1)_
+_Exported on 7/8/2025 at 11:44:24 EDT from Cursor (1.2.1)_
 
 ---
 
@@ -3097,5 +3097,1849 @@ Let me know if you encounter any further issues or need help with the next steps
 
 ```shellscript
 npx prisma migrate dev --name init --schema=src/db/schemas/schema.prisma
+```
+
+---
+
+**User**
+
+add ./data/postgres to gitignore
+
+---
+
+**Cursor**
+
+```ignore
+# Ignore database data
+/data/postgres/
+
+```
+
+`/data/postgres/` has been added to your `.gitignore` file, so your PostgreSQL database files will not be tracked by git.
+
+Let me know if you need to ignore any other files or want to further refine your git configuration!
+
+---
+
+**User**
+
+generate seed data for db
+
+---
+
+**Cursor**
+
+Here’s a practical approach to generate seed data for your Prisma/PostgreSQL database, based on your schema:
+
+---
+
+## 1. Create/Update the Seeder Script
+
+Edit `api/src/db/seeders/seed.ts` to include realistic seed data for Users, Restaurants, Simulations, Teams, MenuItems, Market, Turns, and Reports.
+
+Below is a sample seeder script:
+
+```typescript
+import prisma from '../index';
+
+async function main() {
+  // Create Users
+  const instructor = await prisma.user.create({
+    data: {
+      email: 'instructor@example.com',
+      username: 'instructor1',
+      password: 'hashedpassword', // Use a real hash in production!
+      role: 'INSTRUCTOR',
+    },
+  });
+
+  const teamUser = await prisma.user.create({
+    data: {
+      email: 'team1@example.com',
+      username: 'team1',
+      password: 'hashedpassword',
+      role: 'TEAM',
+    },
+  });
+
+  // Create Restaurant
+  const restaurant = await prisma.restaurant.create({
+    data: {
+      name: 'The Bistro',
+      background: 'A cozy place for simulation.',
+      balanceSheet: { assets: 10000, liabilities: 5000 }, // JSON
+    },
+  });
+
+  // Create Market
+  const market = await prisma.market.create({
+    data: {
+      customerRevenue: 2000,
+      inflation: 2.5,
+      depreciation: 1.2,
+      staffTurnover: 0.1,
+      season: 'Spring',
+      events: { event: 'None' }, // JSON
+    },
+  });
+
+  // Create Simulation
+  const simulation = await prisma.simulation.create({
+    data: {
+      name: 'Sim1',
+      ownerId: instructor.id,
+      restaurantId: restaurant.id,
+      marketId: market.id,
+    },
+  });
+
+  // Create Team
+  const team = await prisma.team.create({
+    data: {
+      name: 'Team A',
+      password: 'teampassword',
+      simulationId: simulation.id,
+      userId: teamUser.id,
+    },
+  });
+
+  // Create MenuItems
+  await prisma.menuItem.createMany({
+    data: [
+      {
+        name: 'Burger',
+        size: 'L',
+        price: 8,
+        costPercent: 30,
+        teamId: team.id,
+        restaurantId: restaurant.id,
+      },
+      {
+        name: 'Fries',
+        size: 'S',
+        price: 3,
+        costPercent: 20,
+        teamId: team.id,
+        restaurantId: restaurant.id,
+      },
+    ],
+  });
+
+  // Create Turn
+  const turn = await prisma.turn.create({
+    data: {
+      simulationId: simulation.id,
+      number: 1,
+      startTime: new Date(),
+      endTime: new Date(),
+    },
+  });
+
+  // Create Report
+  await prisma.report.create({
+    data: {
+      teamId: team.id,
+      turnId: turn.id,
+      finances: { revenue: 2000, profit: 500 }, // JSON
+    },
+  });
+
+  console.log('Seed data created!');
+}
+
+main()
+  .catch((e) => {
+    console.error(e);
+    process.exit(1);
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
+  });
+```
+
+---
+
+## 2. How to Run the Seeder
+
+From your `/api` directory, run:
+```sh
+npx ts-node src/db/seeders/seed.ts
+```
+Or, if you use a build step:
+```sh
+tsc
+node dist/db/seeders/seed.js
+```
+
+---
+
+## 3. Notes
+
+- Adjust the data as needed for your use case.
+- For passwords, use a real hash in production.
+- You can add more users, teams, menu items, etc., by expanding the script.
+
+---
+
+Let me know if you want this script added to your project, or if you want to seed more complex relationships!
+
+```typescript
+import prisma from '../index';
+
+async function main() {
+  // Create Users
+  const instructor = await prisma.user.create({
+    data: {
+      email: 'instructor@example.com',
+      username: 'instructor1',
+      password: 'hashedpassword', // Use a real hash in production!
+      role: 'INSTRUCTOR',
+    },
+  });
+
+  const teamUser = await prisma.user.create({
+    data: {
+      email: 'team1@example.com',
+      username: 'team1',
+      password: 'hashedpassword',
+      role: 'TEAM',
+    },
+  });
+
+  // Create Restaurant
+  const restaurant = await prisma.restaurant.create({
+    data: {
+      name: 'The Bistro',
+      background: 'A cozy place for simulation.',
+      balanceSheet: { assets: 10000, liabilities: 5000 }, // JSON
+    },
+  });
+
+  // Create Market
+  const market = await prisma.market.create({
+    data: {
+      customerRevenue: 2000,
+      inflation: 2.5,
+      depreciation: 1.2,
+      staffTurnover: 0.1,
+      season: 'Spring',
+      events: { event: 'None' }, // JSON
+    },
+  });
+
+  // Create Simulation
+  const simulation = await prisma.simulation.create({
+    data: {
+      name: 'Sim1',
+      ownerId: instructor.id,
+      restaurantId: restaurant.id,
+      marketId: market.id,
+    },
+  });
+
+  // Create Team
+  const team = await prisma.team.create({
+    data: {
+      name: 'Team A',
+      password: 'teampassword',
+      simulationId: simulation.id,
+      userId: teamUser.id,
+    },
+  });
+
+  // Create MenuItems
+  await prisma.menuItem.createMany({
+    data: [
+      {
+        name: 'Burger',
+        size: 'L',
+        price: 8,
+        costPercent: 30,
+        teamId: team.id,
+        restaurantId: restaurant.id,
+      },
+      {
+        name: 'Fries',
+        size: 'S',
+        price: 3,
+        costPercent: 20,
+        teamId: team.id,
+        restaurantId: restaurant.id,
+      },
+    ],
+  });
+
+  // Create Turn
+  const turn = await prisma.turn.create({
+    data: {
+      simulationId: simulation.id,
+      number: 1,
+      startTime: new Date(),
+      endTime: new Date(),
+    },
+  });
+
+  // Create Report
+  await prisma.report.create({
+    data: {
+      teamId: team.id,
+      turnId: turn.id,
+      finances: { revenue: 2000, profit: 500 }, // JSON
+    },
+  });
+
+  console.log('Seed data created!');
+}
+
+main()
+  .catch((e) => {
+    console.error(e);
+    process.exit(1);
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
+  });
+```
+
+```shellscript
+npx ts-node src/db/seeders/seed.ts
+```
+
+```shellscript
+tsc
+node dist/db/seeders/seed.js
+```
+
+---
+
+**User**
+
+add user seed data to db
+
+---
+
+**Cursor**
+
+```typescript
+import prisma from '../index';
+
+async function main() {
+  // Create Users
+  await prisma.user.createMany({
+    data: [
+      {
+        email: 'instructor@example.com',
+        username: 'instructor1',
+        password: 'hashedpassword', // Use a real hash in production!
+        role: 'INSTRUCTOR',
+      },
+      {
+        email: 'team1@example.com',
+        username: 'team1',
+        password: 'hashedpassword',
+        role: 'TEAM',
+      },
+    ],
+    skipDuplicates: true,
+  });
+  console.log('Seeded users!');
+}
+
+main()
+  .catch((e) => {
+    console.error(e);
+    process.exit(1);
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
+  });
+
+```
+
+Your seed script now adds two users (an instructor and a team user) to the database.
+
+**To run the seed script:**
+
+1. From your `/api` directory, run:
+   ```sh
+   npx ts-node src/db/seeders/seed.ts
+   ```
+   (Or use `tsc` and run the compiled JS if you prefer.)
+
+2. You should see `Seeded users!` in the output.
+
+Let me know if you want to seed more data, or need help running or expanding the script!
+
+```shellscript
+   npx ts-node src/db/seeders/seed.ts
+```
+
+---
+
+**User**
+
+add admin user
+
+---
+
+**Cursor**
+
+```typescript
+import prisma from '../index';
+
+async function main() {
+  // Create Users
+  await prisma.user.createMany({
+    data: [
+      {
+        email: 'instructor@example.com',
+        username: 'instructor1',
+        password: 'hashedpassword', // Use a real hash in production!
+        role: 'INSTRUCTOR',
+      },
+      {
+        email: 'team1@example.com',
+        username: 'team1',
+        password: 'hashedpassword',
+        role: 'TEAM',
+      },
+      {
+        email: 'admin@example.com',
+        username: 'admin',
+        password: 'hashedpassword',
+        role: 'ADMIN',
+      },
+    ],
+    skipDuplicates: true,
+  });
+  console.log('Seeded users!');
+}
+
+main()
+  .catch((e) => {
+    console.error(e);
+    process.exit(1);
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
+  });
+
+```
+
+An admin user has been added to your seed data.  
+You now have three users seeded: instructor, team, and admin.
+
+To apply the changes, run the seed script again:
+```sh
+npx ts-node src/db/seeders/seed.ts
+```
+
+Let me know if you want to seed more data or need help with anything else!
+
+```shellscript
+npx ts-node src/db/seeders/seed.ts
+```
+
+---
+
+**User**
+
+put admin user as first user
+
+---
+
+**Cursor**
+
+```typescript
+import prisma from '../index';
+
+async function main() {
+  // Create Users
+  await prisma.user.createMany({
+    data: [
+      {
+        email: 'admin@example.com',
+        username: 'admin',
+        password: 'hashedpassword',
+        role: 'ADMIN',
+      },
+      {
+        email: 'instructor@example.com',
+        username: 'instructor1',
+        password: 'hashedpassword', // Use a real hash in production!
+        role: 'INSTRUCTOR',
+      },
+      {
+        email: 'team1@example.com',
+        username: 'team1',
+        password: 'hashedpassword',
+        role: 'TEAM',
+      },
+    ],
+    skipDuplicates: true,
+  });
+  console.log('Seeded users!');
+}
+
+main()
+  .catch((e) => {
+    console.error(e);
+    process.exit(1);
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
+  });
+
+```
+
+The admin user is now the first entry in your seed data array.  
+When you run the seed script, the admin user will be created first.
+
+Let me know if you need to adjust the order of other users or seed additional data!
+
+---
+
+**User**
+
+set each user password to "password"
+
+---
+
+**Cursor**
+
+```typescript
+import prisma from '../index';
+
+async function main() {
+  // Create Users
+  await prisma.user.createMany({
+    data: [
+      {
+        email: 'admin@example.com',
+        username: 'admin',
+        password: 'password',
+        role: 'ADMIN',
+      },
+      {
+        email: 'instructor@example.com',
+        username: 'instructor1',
+        password: 'password',
+        role: 'INSTRUCTOR',
+      },
+      {
+        email: 'team1@example.com',
+        username: 'team1',
+        password: 'password',
+        role: 'TEAM',
+      },
+    ],
+    skipDuplicates: true,
+  });
+  console.log('Seeded users!');
+}
+
+main()
+  .catch((e) => {
+    console.error(e);
+    process.exit(1);
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
+  });
+
+```
+
+All user passwords in your seed data are now set to "password".
+
+You can rerun your seed script to update the users in your database:
+```sh
+npx ts-node src/db/seeders/seed.ts
+```
+
+Let me know if you need to hash passwords, add more users, or seed other tables!
+
+```shellscript
+npx ts-node src/db/seeders/seed.ts
+```
+
+---
+
+**User**
+
+start db
+
+---
+
+**Cursor**
+
+To start your PostgreSQL database using Docker Compose, run the following command from your **project root** (where `docker-compose.yml` is located):
+
+```sh
+docker-compose up -d
+```
+
+- This will start the PostgreSQL container in the background.
+- The database will be accessible at `localhost:5432` and data will be stored in `./data/postgres`.
+
+Once the database is running, you can run migrations and seed your data.
+
+Let me know if you want the commands for those next steps!
+
+```shellscript
+docker-compose up -d
+```
+
+---
+
+**User**
+
+add script to start, stop db
+
+---
+
+**Cursor**
+
+```json
+{
+  // ... existing fields ...
+  "scripts": {
+    // ... existing scripts ...
+    "db:start": "docker-compose up -d",
+    "db:stop": "docker-compose down"
+  }
+  // ... existing fields ...
+}
+
+```
+
+You now have two scripts in your project root `package.json`:
+
+- **Start the database:**  
+  ```sh
+  npm run db:start
+  ```
+- **Stop the database:**  
+  ```sh
+  npm run db:stop
+  ```
+
+These scripts use Docker Compose to manage your PostgreSQL container.
+
+Let me know if you want to add more scripts or automate other parts of your workflow!
+
+```shellscript
+  npm run db:start
+```
+
+```shellscript
+  npm run db:stop
+```
+
+---
+
+**User**
+
+add script to start api, start ui
+
+---
+
+**Cursor**
+
+```json
+{
+  "scripts": {
+    "db:start": "docker-compose up -d",
+    "db:stop": "docker-compose down",
+    "api:start": "cd api && npm start",
+    "ui:start": "cd ui && npm start"
+  }
+}
+
+```
+
+You now have two new scripts in your project root `package.json`:
+
+- **Start the API:**  
+  ```sh
+  npm run api:start
+  ```
+- **Start the UI:**  
+  ```sh
+  npm run ui:start
+  ```
+
+These scripts will run `npm start` in the `api` and `ui` directories, respectively.
+
+Let me know if you want to add a script to run both at once, or need any other automation!
+
+```shellscript
+  npm run api:start
+```
+
+```shellscript
+  npm run ui:start
+```
+
+---
+
+**User**
+
+add script to build api. add script to start dev
+
+---
+
+**Cursor**
+
+```json
+{
+  "scripts": {
+    "db:start": "docker-compose up -d",
+    "db:stop": "docker-compose down",
+    "api:start": "cd api && npm start",
+    "api:build": "cd api && npm run build",
+    "ui:start": "cd ui && npm start",
+    "dev": "npm-run-all --parallel api:dev ui:start"
+  },
+  "devDependencies": {
+    "npm-run-all": "^4.1.5"
+  }
+}
+
+```
+
+You now have the following scripts in your project root `package.json`:
+
+- **Build the API:**  
+  ```sh
+  npm run api:build
+  ```
+  (Runs `npm run build` in the `api` directory.)
+
+- **Start both API and UI in dev mode:**  
+  ```sh
+  npm run dev
+  ```
+  (Runs `npm run api:dev` and `npm run ui:start` in parallel. Make sure you have an `api:dev` script in your `api/package.json`—it should run your API in development mode.)
+
+- **Note:**  
+  The package `npm-run-all` has been added as a dev dependency to support parallel script execution.
+
+Let me know if you want to add or adjust any other scripts!
+
+```shellscript
+  npm run api:build
+```
+
+```shellscript
+  npm run dev
+```
+
+---
+
+**User**
+
+add script for api dev
+
+---
+
+**Cursor**
+
+```json
+{
+  "scripts": {
+    "db:start": "docker-compose up -d",
+    "db:stop": "docker-compose down",
+    "api:start": "cd api && npm start",
+    "api:build": "cd api && npm run build",
+    "api:dev": "cd api && npm run dev",
+    "ui:start": "cd ui && npm start",
+    "dev": "npm-run-all --parallel api:dev ui:start"
+  },
+  "devDependencies": {
+    "npm-run-all": "^4.1.5"
+  }
+}
+
+```
+
+You now have an `api:dev` script in your project root `package.json`:
+
+- **Start the API in dev mode:**  
+  ```sh
+  npm run api:dev
+  ```
+  (Runs `npm run dev` in the `api` directory.)
+
+This also enables the `npm run dev` script to start both the API and UI in development mode in parallel.
+
+Let me know if you need any more scripts or workflow improvements!
+
+```shellscript
+  npm run api:dev
+```
+
+---
+
+**User**
+
+add node_modules and package-lock to .gitignore
+
+---
+
+**Cursor**
+
+```ignore
+# Ignore database data
+/data/postgres/
+
+# Node modules and lock files
+node_modules/
+package-lock.json
+
+```
+
+`node_modules/` and `package-lock.json` have been added to your `.gitignore` file, ensuring these files and folders will not be tracked by git.
+
+Let me know if you need to ignore any other files or want to further refine your git configuration!
+
+---
+
+**User**
+
+add script to seed dev data
+
+---
+
+**Cursor**
+
+```json
+{
+  "scripts": {
+    "db:start": "docker-compose up -d",
+    "db:stop": "docker-compose down",
+    "api:start": "cd api && npm start",
+    "api:build": "cd api && npm run build",
+    "api:dev": "cd api && npm run dev",
+    "ui:start": "cd ui && npm start",
+    "dev": "npm-run-all --parallel api:dev ui:start",
+    "db:seed": "npx ts-node api/src/db/seeders/seed.ts"
+  },
+  "devDependencies": {
+    "npm-run-all": "^4.1.5"
+  }
+}
+
+```
+
+You now have a script to seed your development database:
+
+- **Seed dev data:**  
+  ```sh
+  npm run db:seed
+  ```
+  (This runs your TypeScript seed script at `api/src/db/seeders/seed.ts`.)
+
+Let me know if you want to automate seeding after migrations, or need any other scripts!
+
+```shellscript
+  npm run db:seed
+```
+
+---
+
+**User**
+
+add script to build ui
+
+---
+
+**Cursor**
+
+```json
+{
+  "scripts": {
+    "db:start": "docker-compose up -d",
+    "db:stop": "docker-compose down",
+    "api:start": "cd api && npm start",
+    "api:build": "cd api && npm run build",
+    "api:dev": "cd api && npm run dev",
+    "ui:start": "cd ui && npm start",
+    "ui:build": "cd ui && npm run build",
+    "dev": "npm-run-all --parallel api:dev ui:start",
+    "db:seed": "npx ts-node api/src/db/seeders/seed.ts"
+  },
+  "devDependencies": {
+    "npm-run-all": "^4.1.5"
+  }
+}
+
+```
+
+You now have a script to build your UI:
+
+- **Build the UI:**  
+  ```sh
+  npm run ui:build
+  ```
+  (This runs `npm run build` in the `ui` directory.)
+
+Let me know if you want to add a script to build both API and UI together, or need any other workflow improvements!
+
+```shellscript
+  npm run ui:build
+```
+
+---
+
+**User**
+
+ignore build folder
+
+---
+
+**Cursor**
+
+```ignore
+node_modules/
+package-lock.json
+build/
+
+```
+
+The `build/` folder has been added to your `ui/.gitignore` file, so your built UI files will no longer be tracked by git.
+
+Let me know if you need to ignore any other files or folders!
+
+---
+
+**User**
+
+change start script to be "dev"
+
+---
+
+**Cursor**
+
+```json
+{
+  "name": "restsim-ui",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "webpack serve --mode development --open --port 8999",
+    "build": "webpack --mode production"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "typescript": "^5.0.0",
+    "ts-loader": "^9.0.0",
+    "webpack": "^5.0.0",
+    "webpack-cli": "^5.0.0",
+    "webpack-dev-server": "^4.0.0",
+    "html-webpack-plugin": "^5.0.0"
+  }
+}
+
+```
+
+The `start` script in your `ui/package.json` has been changed to `dev`.  
+You can now start your UI development server with:
+
+```sh
+npm run dev
+```
+
+Let me know if you want to update any root-level scripts or documentation to reflect this change!
+
+```shellscript
+npm run dev
+```
+
+---
+
+**User**
+
+add script to start in production mode
+
+---
+
+**Cursor**
+
+```json
+{
+  "name": "restsim-ui",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "webpack serve --mode development --open --port 8999",
+    "build": "webpack --mode production",
+    "start": "npx serve -s build -l 8999"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "typescript": "^5.0.0",
+    "ts-loader": "^9.0.0",
+    "webpack": "^5.0.0",
+    "webpack-cli": "^5.0.0",
+    "webpack-dev-server": "^4.0.0",
+    "html-webpack-plugin": "^5.0.0"
+  }
+}
+
+```
+
+A `start` script has been added to your `ui/package.json` for production mode:
+
+```sh
+npm run start
+```
+
+This will serve the contents of the `build` folder on port 8999 using the `serve` package.  
+If you haven't installed `serve` globally, this script will use `npx` to run it.
+
+Let me know if you want to add `serve` as a dependency or need a different production server setup!
+
+```shellscript
+npm run start
+```
+
+---
+
+**User**
+
+reorder scripts in all packages
+
+---
+
+**Cursor**
+
+Here’s a recommended, consistent order for scripts in all your `package.json` files (root, `ui`, and `api`):
+
+### **Recommended Script Order**
+1. `dev` – for development mode
+2. `start` – for production mode
+3. `build` – for building the project
+4. `test` – for running tests (if present)
+5. Project-specific scripts (e.g., `db:start`, `db:stop`, `db:seed`, `api:start`, `api:dev`, `api:build`, `ui:start`, `ui:build`)
+
+---
+
+### **Example for `ui/package.json`**
+```json
+"scripts": {
+  "dev": "webpack serve --mode development --open --port 8999",
+  "start": "npx serve -s build -l 8999",
+  "build": "webpack --mode production"
+}
+```
+
+---
+
+### **Example for Root `package.json`**
+```json
+"scripts": {
+  "dev": "npm-run-all --parallel api:dev ui:start",
+  "start": "npm-run-all --parallel api:start ui:start",
+  "build": "npm-run-all api:build ui:build",
+  "test": "echo \"No tests specified\" && exit 0",
+  "db:start": "docker-compose up -d",
+  "db:stop": "docker-compose down",
+  "db:seed": "npx ts-node api/src/db/seeders/seed.ts",
+  "api:start": "cd api && npm start",
+  "api:dev": "cd api && npm run dev",
+  "api:build": "cd api && npm run build",
+  "ui:start": "cd ui && npm start",
+  "ui:build": "cd ui && npm run build"
+}
+```
+*(Omit or adjust scripts as needed for your project.)*
+
+---
+
+### **Example for `api/package.json`**
+```json
+"scripts": {
+  "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
+  "start": "node dist/server.js",
+  "build": "tsc"
+}
+```
+
+---
+
+**Would you like me to update and reorder the scripts in all your `package.json` files accordingly? If so, please confirm which packages you want updated (root, `ui`, `api`).**
+
+```json
+"scripts": {
+  "dev": "webpack serve --mode development --open --port 8999",
+  "start": "npx serve -s build -l 8999",
+  "build": "webpack --mode production"
+}
+```
+
+```json
+"scripts": {
+  "dev": "npm-run-all --parallel api:dev ui:start",
+  "start": "npm-run-all --parallel api:start ui:start",
+  "build": "npm-run-all api:build ui:build",
+  "test": "echo \"No tests specified\" && exit 0",
+  "db:start": "docker-compose up -d",
+  "db:stop": "docker-compose down",
+  "db:seed": "npx ts-node api/src/db/seeders/seed.ts",
+  "api:start": "cd api && npm start",
+  "api:dev": "cd api && npm run dev",
+  "api:build": "cd api && npm run build",
+  "ui:start": "cd ui && npm start",
+  "ui:build": "cd ui && npm run build"
+}
+```
+
+```json
+"scripts": {
+  "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
+  "start": "node dist/server.js",
+  "build": "tsc"
+}
+```
+
+---
+
+**User**
+
+yes
+
+---
+
+**Cursor**
+
+```json
+{
+  "scripts": {
+    "dev": "npm-run-all --parallel api:dev ui:start",
+    "start": "npm-run-all --parallel api:start ui:start",
+    "build": "npm-run-all api:build ui:build",
+    "test": "echo \"No tests specified\" && exit 0",
+    "db:start": "docker-compose up -d",
+    "db:stop": "docker-compose down",
+    "db:seed": "npx ts-node api/src/db/seeders/seed.ts",
+    "api:start": "cd api && npm start",
+    "api:dev": "cd api && npm run dev",
+    "api:build": "cd api && npm run build",
+    "ui:start": "cd ui && npm start",
+    "ui:build": "cd ui && npm run build"
+  },
+  "devDependencies": {
+    "npm-run-all": "^4.1.5"
+  }
+}
+
+```
+
+```json
+{
+  "name": "restsim-ui",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "webpack serve --mode development --open --port 8999",
+    "start": "npx serve -s build -l 8999",
+    "build": "webpack --mode production"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "typescript": "^5.0.0",
+    "ts-loader": "^9.0.0",
+    "webpack": "^5.0.0",
+    "webpack-cli": "^5.0.0",
+    "webpack-dev-server": "^4.0.0",
+    "html-webpack-plugin": "^5.0.0"
+  }
+}
+
+```
+
+```json
+{
+  "name": "restsim-api",
+  "version": "1.0.0",
+  "private": true,
+  "main": "dist/server.js",
+  "scripts": {
+    "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
+    "start": "node dist/server.js",
+    "build": "tsc"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "socket.io": "^4.7.5",
+    "prisma": "^5.10.2",
+    "@prisma/client": "^5.10.2",
+    "jsonwebtoken": "^9.0.2",
+    "bcrypt": "^5.1.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "ts-node": "^10.9.1",
+    "ts-node-dev": "^2.0.0",
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.4.2",
+    "@types/jsonwebtoken": "^9.0.2",
+    "@types/bcrypt": "^5.0.0",
+    "@types/cors": "^2.8.13"
+  }
+}
+
+```
+
+All `package.json` scripts have been reordered for consistency:
+
+- **Order:** `dev`, `start`, `build`, `test` (if present), then project-specific scripts.
+- This applies to the root, `ui`, and `api` packages.
+
+You can now easily find and run scripts in a predictable order across your monorepo.
+
+Let me know if you want to add, rename, or further organize any scripts!
+
+---
+
+**User**
+
+implement user login
+
+---
+
+**Cursor**
+
+To implement user login, you’ll need both backend and frontend changes. Here’s a clear plan and the first steps:
+
+---
+
+## 1. **Backend: API Endpoint for Login**
+
+- **Route:** `POST /api/auth/login`
+- **Input:** `{ email, password }`
+- **Process:**  
+  - Find user by email.
+  - Compare password (use bcrypt for hashing).
+  - If valid, return a JWT token (or session info).
+- **Output:**  
+  - On success: `{ token, user }`
+  - On failure: error message
+
+---
+
+## 2. **Frontend: Login Form Submission**
+
+- Call the backend API with email and password.
+- On success, store the token (in memory, localStorage, or cookie).
+- Redirect to dashboard or show error.
+
+---
+
+### **Step 1: Backend Implementation**
+
+Let’s start by implementing the backend login logic in `api/src/api/auth/index.ts`:
+
+- Use `bcrypt` to compare passwords.
+- Use `jsonwebtoken` to generate a JWT.
+
+**Do you want to use JWT for authentication, or do you prefer session-based auth?**  
+(JWT is recommended for modern SPAs.)
+
+If JWT is OK, I’ll proceed with the backend implementation!
+
+---
+
+**User**
+
+proceed
+
+---
+
+**Cursor**
+
+```typescript
+import { Router } from 'express';
+import prisma from '../../db';
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+
+const router = Router();
+
+// POST /api/auth/login
+router.post('/login', async (req, res) => {
+  const { email, password } = req.body;
+  if (!email || !password) {
+    return res.status(400).json({ error: 'Email and password are required.' });
+  }
+  try {
+    const user = await prisma.user.findUnique({ where: { email } });
+    if (!user) {
+      return res.status(401).json({ error: 'Invalid credentials.' });
+    }
+    const valid = await bcrypt.compare(password, user.password);
+    if (!valid) {
+      return res.status(401).json({ error: 'Invalid credentials.' });
+    }
+    const token = jwt.sign(
+      { userId: user.id, role: user.role },
+      process.env.JWT_SECRET || 'changeme',
+      { expiresIn: '7d' }
+    );
+    // Exclude password from user info
+    const { password: _, ...userInfo } = user;
+    res.json({ token, user: userInfo });
+  } catch (err) {
+    res.status(500).json({ error: 'Internal server error.' });
+  }
+});
+
+// POST /api/auth/signup
+router.post('/signup', (req, res) => {
+  // TODO: Implement signup logic
+  res.json({ message: 'Signup endpoint' });
+});
+
+export default router;
+
+```
+
+The backend now supports user login at `POST /api/auth/login`:
+
+- It checks the email and password.
+- Uses bcrypt to compare the password.
+- Returns a JWT token and user info (excluding the password) on success.
+- Returns an error on failure.
+
+**Next steps:**
+- Make sure your user passwords in the database are hashed (bcrypt) for real use.
+- Set a `JWT_SECRET` in your `/api/.env` file for security.
+
+Let me know if you want to:
+- Add password hashing to your seed script,
+- Implement the frontend login call,
+- Or test the endpoint!
+
+---
+
+**User**
+
+give me command to generate secret token
+
+---
+
+**Cursor**
+
+You can generate a secure random secret token for your JWT using the following command in your terminal (requires Node.js):
+
+```sh
+node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+```
+
+This will output a 64-character hexadecimal string, which is strong enough for use as a JWT secret.
+
+**How to use:**
+1. Run the command above.
+2. Copy the output.
+3. Add it to your `/api/.env` file as:
+   ```
+   JWT_SECRET="your_generated_secret_here"
+   ```
+
+Let me know if you need a command for another environment or want to automate this in your setup!
+
+```shellscript
+node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+```
+
+```plaintext
+   JWT_SECRET="your_generated_secret_here"
+```
+
+---
+
+**User**
+
+Add password hashing to your seed script
+
+---
+
+**Cursor**
+
+```typescript
+import prisma from '../index';
+import bcrypt from 'bcrypt';
+
+async function main() {
+  // Hash passwords
+  const password = await bcrypt.hash('password', 10);
+
+  // Create Users
+  await prisma.user.createMany({
+    data: [
+      {
+        email: 'admin@example.com',
+        username: 'admin',
+        password,
+        role: 'ADMIN',
+      },
+      {
+        email: 'instructor@example.com',
+        username: 'instructor1',
+        password,
+        role: 'INSTRUCTOR',
+      },
+      {
+        email: 'team1@example.com',
+        username: 'team1',
+        password,
+        role: 'TEAM',
+      },
+    ],
+    skipDuplicates: true,
+  });
+  console.log('Seeded users!');
+}
+
+main()
+  .catch((e) => {
+    console.error(e);
+    process.exit(1);
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
+  });
+
+```
+
+Your seed script now hashes the password for each user using bcrypt before inserting them into the database.  
+All users will have the password "password" (hashed in the DB).
+
+To apply the changes, rerun your seed script:
+```sh
+npm run db:seed
+```
+
+Let me know if you want to verify the hashes, seed more data, or need help with anything else!
+
+```shellscript
+npm run db:seed
+```
+
+---
+
+**User**
+
+add creation of db, if not exists, when seeding
+
+---
+
+**Cursor**
+
+To ensure the database exists before seeding, you can add logic to your seed script to create the database if it does not exist.  
+However, Prisma itself does not create the database if it’s missing; it expects the database to exist.  
+You can use the `pg` package (for PostgreSQL) to check and create the database before running Prisma seed logic.
+
+Here’s how you can do it:
+
+---
+
+### 1. Install the `pg` package in `/api`
+
+```sh
+npm install pg
+```
+
+---
+
+### 2. Update your seed script (`api/src/db/seeders/seed.ts`):
+
+Add logic at the top to connect to the default `postgres` database, check if your target database exists, and create it if not.
+
+```typescript
+import prisma from '../index';
+import bcrypt from 'bcrypt';
+import { Client } from 'pg';
+
+async function ensureDatabaseExists() {
+  const dbName = process.env.POSTGRES_DB || 'restsim';
+  const dbUser = process.env.POSTGRES_USER || 'postgres';
+  const dbPassword = process.env.POSTGRES_PASSWORD || 'mysecretpassword';
+  const dbHost = process.env.POSTGRES_HOST || 'localhost';
+  const dbPort = process.env.POSTGRES_PORT || 5432;
+
+  // Connect to the default 'postgres' database
+  const client = new Client({
+    user: dbUser,
+    password: dbPassword,
+    host: dbHost,
+    port: Number(dbPort),
+    database: 'postgres',
+  });
+
+  await client.connect();
+
+  // Check if the database exists
+  const res = await client.query(
+    `SELECT 1 FROM pg_database WHERE datname = $1`,
+    [dbName]
+  );
+
+  if (res.rowCount === 0) {
+    // Create the database if it does not exist
+    await client.query(`CREATE DATABASE "${dbName}"`);
+    console.log(`Database "${dbName}" created.`);
+  } else {
+    console.log(`Database "${dbName}" already exists.`);
+  }
+
+  await client.end();
+}
+
+async function main() {
+  await ensureDatabaseExists();
+
+  // Hash passwords
+  const password = await bcrypt.hash('password', 10);
+
+  // Create Users
+  await prisma.user.createMany({
+    data: [
+      {
+        email: 'admin@example.com',
+        username: 'admin',
+        password,
+        role: 'ADMIN',
+      },
+      {
+        email: 'instructor@example.com',
+        username: 'instructor1',
+        password,
+        role: 'INSTRUCTOR',
+      },
+      {
+        email: 'team1@example.com',
+        username: 'team1',
+        password,
+        role: 'TEAM',
+      },
+    ],
+    skipDuplicates: true,
+  });
+  console.log('Seeded users!');
+}
+
+main()
+  .catch((e) => {
+    console.error(e);
+    process.exit(1);
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
+  });
+```
+
+---
+
+**Note:**  
+- This approach works for PostgreSQL.
+- Make sure your environment variables are set for DB connection.
+- You may want to skip this logic in production or if you use managed databases.
+
+---
+
+Let me know if you want this code added to your project, or if you need a version for a different database!
+
+```shellscript
+npm install pg
+```
+
+```typescript
+import prisma from '../index';
+import bcrypt from 'bcrypt';
+import { Client } from 'pg';
+
+async function ensureDatabaseExists() {
+  const dbName = process.env.POSTGRES_DB || 'restsim';
+  const dbUser = process.env.POSTGRES_USER || 'postgres';
+  const dbPassword = process.env.POSTGRES_PASSWORD || 'mysecretpassword';
+  const dbHost = process.env.POSTGRES_HOST || 'localhost';
+  const dbPort = process.env.POSTGRES_PORT || 5432;
+
+  // Connect to the default 'postgres' database
+  const client = new Client({
+    user: dbUser,
+    password: dbPassword,
+    host: dbHost,
+    port: Number(dbPort),
+    database: 'postgres',
+  });
+
+  await client.connect();
+
+  // Check if the database exists
+  const res = await client.query(
+    `SELECT 1 FROM pg_database WHERE datname = $1`,
+    [dbName]
+  );
+
+  if (res.rowCount === 0) {
+    // Create the database if it does not exist
+    await client.query(`CREATE DATABASE "${dbName}"`);
+    console.log(`Database "${dbName}" created.`);
+  } else {
+    console.log(`Database "${dbName}" already exists.`);
+  }
+
+  await client.end();
+}
+
+async function main() {
+  await ensureDatabaseExists();
+
+  // Hash passwords
+  const password = await bcrypt.hash('password', 10);
+
+  // Create Users
+  await prisma.user.createMany({
+    data: [
+      {
+        email: 'admin@example.com',
+        username: 'admin',
+        password,
+        role: 'ADMIN',
+      },
+      {
+        email: 'instructor@example.com',
+        username: 'instructor1',
+        password,
+        role: 'INSTRUCTOR',
+      },
+      {
+        email: 'team1@example.com',
+        username: 'team1',
+        password,
+        role: 'TEAM',
+      },
+    ],
+    skipDuplicates: true,
+  });
+  console.log('Seeded users!');
+}
+
+main()
+  .catch((e) => {
+    console.error(e);
+    process.exit(1);
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
+  });
+```
+
+---
+
+**User**
+
+in api package, add script to init db with schema
+
+---
+
+**Cursor**
+
+```json
+{
+  "name": "restsim-api",
+  "version": "1.0.0",
+  "private": true,
+  "main": "dist/server.js",
+  "scripts": {
+    "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
+    "start": "node dist/server.js",
+    "build": "tsc",
+    "db:init": "npx prisma migrate dev --name init --schema=src/db/schemas/schema.prisma"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "socket.io": "^4.7.5",
+    "prisma": "^5.10.2",
+    "@prisma/client": "^5.10.2",
+    "jsonwebtoken": "^9.0.2",
+    "bcrypt": "^5.1.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "ts-node": "^10.9.1",
+    "ts-node-dev": "^2.0.0",
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.4.2",
+    "@types/jsonwebtoken": "^9.0.2",
+    "@types/bcrypt": "^5.0.0",
+    "@types/cors": "^2.8.13"
+  }
+}
+
+```
+
+You now have a script in your `api/package.json` to initialize the database with your schema:
+
+```sh
+npm run db:init
+```
+
+This will run Prisma migrations using your schema file at `src/db/schemas/schema.prisma`.
+
+Let me know if you want to chain this with seeding or add any other database management scripts!
+
+```shellscript
+npm run db:init
+```
+
+---
+
+**User**
+
+move db scripts from root package to api package. update root package scripts to call api package scripts
+
+---
+
+**Cursor**
+
+```json
+{
+  "scripts": {
+    "dev": "npm-run-all --parallel api:dev ui:start",
+    "start": "npm-run-all --parallel api:start ui:start",
+    "build": "npm-run-all api:build ui:build",
+    "test": "echo \"No tests specified\" && exit 0",
+    "db:start": "npm run db:start --prefix api",
+    "db:stop": "npm run db:stop --prefix api",
+    "db:seed": "npm run db:seed --prefix api",
+    "db:init": "npm run db:init --prefix api",
+    "api:start": "cd api && npm start",
+    "api:dev": "cd api && npm run dev",
+    "api:build": "cd api && npm run build",
+    "ui:start": "cd ui && npm start",
+    "ui:build": "cd ui && npm run build"
+  },
+  "devDependencies": {
+    "npm-run-all": "^4.1.5"
+  }
+}
+
+```
+
+```json
+{
+  "name": "restsim-api",
+  "version": "1.0.0",
+  "private": true,
+  "main": "dist/server.js",
+  "scripts": {
+    "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
+    "start": "node dist/server.js",
+    "build": "tsc",
+    "db:start": "docker-compose up -d",
+    "db:stop": "docker-compose down",
+    "db:seed": "npx ts-node src/db/seeders/seed.ts",
+    "db:init": "npx prisma migrate dev --name init --schema=src/db/schemas/schema.prisma"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "socket.io": "^4.7.5",
+    "prisma": "^5.10.2",
+    "@prisma/client": "^5.10.2",
+    "jsonwebtoken": "^9.0.2",
+    "bcrypt": "^5.1.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "ts-node": "^10.9.1",
+    "ts-node-dev": "^2.0.0",
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.4.2",
+    "@types/jsonwebtoken": "^9.0.2",
+    "@types/bcrypt": "^5.0.0",
+    "@types/cors": "^2.8.13"
+  }
+}
+
+```
+
+All database management scripts (`db:start`, `db:stop`, `db:seed`, `db:init`) have been moved to the `api/package.json`.  
+The root `package.json` now calls these scripts using `npm --prefix api`.
+
+You can now run any database script from the root, and it will delegate to the `api` package.
+
+Let me know if you want to further organize scripts or automate any other workflows!
+
+---
+
+**User**
+
+add ui:dev script to root package and update dev script
+
+---
+
+**Cursor**
+
+```json
+{
+  "scripts": {
+    "dev": "npm-run-all --parallel api:dev ui:dev",
+    "start": "npm-run-all --parallel api:start ui:start",
+    "build": "npm-run-all api:build ui:build",
+    "test": "echo \"No tests specified\" && exit 0",
+    "db:start": "npm run db:start --prefix api",
+    "db:stop": "npm run db:stop --prefix api",
+    "db:seed": "npm run db:seed --prefix api",
+    "db:init": "npm run db:init --prefix api",
+    "api:start": "cd api && npm start",
+    "api:dev": "cd api && npm run dev",
+    "api:build": "cd api && npm run build",
+    "ui:start": "cd ui && npm start",
+    "ui:dev": "cd ui && npm run dev",
+    "ui:build": "cd ui && npm run build"
+  },
+  "devDependencies": {
+    "npm-run-all": "^4.1.5"
+  }
+}
+
+```
+
+A `ui:dev` script has been added to your root `package.json`, and the `dev` script now uses `ui:dev` instead of `ui:start`.
+
+You can now run:
+```sh
+npm run dev
+```
+to start both the API and UI in development mode, using their respective dev scripts.
+
+Let me know if you want to further refine your scripts or automate any other tasks!
+
+```shellscript
+npm run dev
 ```
 

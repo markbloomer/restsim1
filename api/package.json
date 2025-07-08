@@ -6,7 +6,11 @@
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
     "start": "node dist/server.js",
-    "build": "tsc"
+    "build": "tsc",
+    "db:start": "docker-compose up -d",
+    "db:stop": "docker-compose down",
+    "db:seed": "npx ts-node src/db/seeders/seed.ts",
+    "db:init": "npx prisma migrate dev --name init --schema=src/db/schemas/schema.prisma"
   },
   "dependencies": {
     "express": "^4.18.2",

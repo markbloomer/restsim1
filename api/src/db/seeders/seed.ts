@@ -1,27 +1,31 @@
 // Placeholder for database seeding script
 
 import prisma from '../index';
+import bcrypt from 'bcrypt';
 
 async function main() {
+  // Hash passwords
+  const password = await bcrypt.hash('password', 10);
+
   // Create Users
   await prisma.user.createMany({
     data: [
       {
         email: 'admin@example.com',
         username: 'admin',
-        password: 'password',
+        password,
         role: 'ADMIN',
       },
       {
         email: 'instructor@example.com',
         username: 'instructor1',
-        password: 'password',
+        password,
         role: 'INSTRUCTOR',
       },
       {
         email: 'team1@example.com',
         username: 'team1',
-        password: 'password',
+        password,
         role: 'TEAM',
       },
     ],
