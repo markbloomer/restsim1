@@ -1,19 +1,23 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './features/auth/Login';
+import Dashboard from './features/dashboard/Dashboard';
 
-const Dashboard: React.FC = () => (
-  <div style={{ textAlign: 'center', marginTop: 40 }}>
-    <h2>Dashboard (Placeholder)</h2>
-    <p>This is the dashboard page.</p>
-  </div>
-);
+const RequireAuth: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const token = localStorage.getItem('token');
+  if (!token) return <Navigate to="/login" replace />;
+  return <>{children}</>;
+};
 
 const App: React.FC = () => (
   <Router>
     <Routes>
       <Route path="/login" element={<Login />} />
-      <Route path="/dashboard" element={<Dashboard />} />
+      <Route path="/dashboard" element={
+        <RequireAuth>
+          <Dashboard />
+        </RequireAuth>
+      } />
       <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
   </Router>

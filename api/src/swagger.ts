@@ -9,6 +9,16 @@ const options = {
       version: '1.0.0',
       description: 'API documentation for the Restaurant Simulator backend',
     },
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT',
+        },
+      },
+    },
+    security: [{ bearerAuth: [] }],
   },
   apis: ['./src/api/**/*.ts'], // Path to the API docs
 };
