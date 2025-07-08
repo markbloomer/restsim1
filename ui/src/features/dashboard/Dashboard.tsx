@@ -40,13 +40,17 @@ const Dashboard: React.FC = () => {
     navigate('/login');
   };
 
+  const handleCreateSimulation = () => {
+    navigate('/create-simulation');
+  };
+
   return (
     <div style={{ maxWidth: 700, margin: '40px auto', padding: 24, border: '1px solid #ccc', borderRadius: 8 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
         <span><b>User:</b> {user.username}</span>
         <button onClick={handleLogout}>Logout</button>
       </div>
-      <button style={{ marginBottom: 16 }}>Create Simulation</button>
+      <button style={{ marginBottom: 16 }} onClick={handleCreateSimulation}>Create Simulation</button>
       <div style={{ marginBottom: 16 }}>
         <b>Simulations:</b>
         {loading ? (
