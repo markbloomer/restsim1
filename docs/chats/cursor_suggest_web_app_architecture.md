@@ -1,5 +1,5 @@
 # Suggest web app architecture
-_Exported on 7/8/2025 at 13:19:33 EDT from Cursor (1.2.1)_
+_Exported on 7/8/2025 at 15:19:32 EDT from Cursor (1.2.1)_
 
 ---
 
@@ -6390,4 +6390,1984 @@ The login page now correctly imports `API_BASE_URL` from the right path and uses
 You can now control the API URL via your config files, and the login will always use the correct environment-based URL.
 
 Let me know if you want to update other API calls or need further improvements!
+
+---
+
+**User**
+
+use wireframes to implement dashboard page
+
+---
+
+**Cursor**
+
+```typescriptreact
+import React, { useState } from 'react';
+
+const mockSimulations = [
+  { id: 1234, name: 'Sim1', owner: 'John' },
+  { id: 5678, name: 'Sim2', owner: 'Alice' },
+];
+
+const Dashboard: React.FC = () => {
+  const [search, setSearch] = useState('');
+  const [simulations] = useState(mockSimulations);
+  const user = { username: 'johndoe' };
+
+  const filtered = simulations.filter(sim =>
+    sim.name.toLowerCase().includes(search.toLowerCase()) ||
+    sim.owner.toLowerCase().includes(search.toLowerCase()) ||
+    String(sim.id).includes(search)
+  );
+
+  return (
+    <div style={{ maxWidth: 700, margin: '40px auto', padding: 24, border: '1px solid #ccc', borderRadius: 8 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+        <span><b>User:</b> {user.username}</span>
+        <button>Logout</button>
+      </div>
+      <button style={{ marginBottom: 16 }}>Create Simulation</button>
+      <div style={{ marginBottom: 16 }}>
+        <b>Simulations:</b>
+        <table style={{ width: '100%', marginTop: 8, borderCollapse: 'collapse' }}>
+          <thead>
+            <tr style={{ background: '#f5f5f5' }}>
+              <th style={{ border: '1px solid #ccc', padding: 6 }}>ID</th>
+              <th style={{ border: '1px solid #ccc', padding: 6 }}>Name</th>
+              <th style={{ border: '1px solid #ccc', padding: 6 }}>Owner</th>
+              <th style={{ border: '1px solid #ccc', padding: 6 }}>Join</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filtered.map(sim => (
+              <tr key={sim.id}>
+                <td style={{ border: '1px solid #ccc', padding: 6 }}>{sim.id}</td>
+                <td style={{ border: '1px solid #ccc', padding: 6 }}>{sim.name}</td>
+                <td style={{ border: '1px solid #ccc', padding: 6 }}>{sim.owner}</td>
+                <td style={{ border: '1px solid #ccc', padding: 6 }}>
+                  <button style={{ marginRight: 8 }}>Instructor</button>
+                  <button>Team</button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <div style={{ marginTop: 12 }}>
+          <label>Search: </label>
+          <input
+            type="text"
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            style={{ padding: 6, width: 200 }}
+            placeholder="Search simulations..."
+          />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Dashboard;
+
+```
+
+The Dashboard page has been implemented according to your wireframe:
+
+- Displays user info and a logout button
+- "Create Simulation" button
+- Table of simulations with ID, Name, Owner, and Join buttons (Instructor/Team)
+- Search input to filter simulations
+
+This uses mock data for now.  
+Let me know if you want to connect it to your backend, add navigation, or implement the create/join actions!
+
+---
+
+**User**
+
+update App to use Dashboard
+
+---
+
+**Cursor**
+
+```typescriptreact
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import Login from './features/auth/Login';
+import Dashboard from './features/dashboard/Dashboard';
+
+const App: React.FC = () => (
+  <Router>
+    <Routes>
+      <Route path="/login" element={<Login />} />
+      <Route path="/dashboard" element={<Dashboard />} />
+      <Route path="*" element={<Navigate to="/login" replace />} />
+    </Routes>
+  </Router>
+);
+
+export default App;
+
+```
+
+Your `App.tsx` now routes `/dashboard` to the new Dashboard component based on your wireframe, replacing the old placeholder.
+
+You can now navigate to `/dashboard` in your app to see the updated dashboard UI.
+
+Let me know if you want to add route protection, connect the dashboard to real data, or implement more features!
+
+---
+
+**User**
+
+connect the dashboard to real data
+
+---
+
+**Cursor**
+
+To connect the dashboard to real data, you’ll need to:
+
+1. **Create a backend API endpoint** to fetch simulations (e.g., `GET /api/simulations`).
+2. **Fetch the data in the Dashboard component** using `useEffect` and `fetch` (or axios).
+3. **Display the fetched data** instead of mock data.
+4. **(Optional)**: Use the JWT token for authentication in the API call.
+
+---
+
+## 1. **Backend: Add Simulations Endpoint**
+
+In `api/src/api/index.ts` (or a new `simulations.ts` route file):
+
+```ts
+// api/src/api/simulations.ts
+import { Router } from 'express';
+import prisma from '../db';
+
+const router = Router();
+
+router.get('/', async (req, res) => {
+  try {
+    const simulations = await prisma.simulation.findMany({
+      include: { owner: true }
+    });
+    res.json(simulations.map(sim => ({
+      id: sim.id,
+      name: sim.name,
+      owner: sim.owner?.username || 'Unknown'
+    })));
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch simulations' });
+  }
+});
+
+export default router;
+```
+
+And in `api/src/api/index.ts`:
+```ts
+import simulationsRouter from './simulations';
+router.use('/simulations', simulationsRouter);
+```
+
+---
+
+## 2. **Frontend: Fetch Simulations in Dashboard**
+
+Update `Dashboard.tsx` to fetch from the API:
+
+```tsx
+import React, { useState, useEffect } from 'react';
+import { API_BASE_URL } from '../../../config';
+
+const Dashboard: React.FC = () => {
+  const [search, setSearch] = useState('');
+  const [simulations, setSimulations] = useState<{id: number, name: string, owner: string}[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchSimulations = async () => {
+      setLoading(true);
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/simulations`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token') || ''}`
+          }
+        });
+        const data = await res.json();
+        setSimulations(data);
+      } catch {
+        setSimulations([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchSimulations();
+  }, []);
+
+  const filtered = simulations.filter(sim =>
+    sim.name.toLowerCase().includes(search.toLowerCase()) ||
+    sim.owner.toLowerCase().includes(search.toLowerCase()) ||
+    String(sim.id).includes(search)
+  );
+
+  // ... (rest of the component remains the same, but use filtered instead of mockSimulations)
+};
+```
+
+---
+
+**Would you like me to implement both the backend endpoint and the frontend update for you?**
+
+```typescript
+// api/src/api/simulations.ts
+import { Router } from 'express';
+import prisma from '../db';
+
+const router = Router();
+
+router.get('/', async (req, res) => {
+  try {
+    const simulations = await prisma.simulation.findMany({
+      include: { owner: true }
+    });
+    res.json(simulations.map(sim => ({
+      id: sim.id,
+      name: sim.name,
+      owner: sim.owner?.username || 'Unknown'
+    })));
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch simulations' });
+  }
+});
+
+export default router;
+```
+
+```typescript
+import simulationsRouter from './simulations';
+router.use('/simulations', simulationsRouter);
+```
+
+```typescriptreact
+import React, { useState, useEffect } from 'react';
+import { API_BASE_URL } from '../../../config';
+
+const Dashboard: React.FC = () => {
+  const [search, setSearch] = useState('');
+  const [simulations, setSimulations] = useState<{id: number, name: string, owner: string}[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchSimulations = async () => {
+      setLoading(true);
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/simulations`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token') || ''}`
+          }
+        });
+        const data = await res.json();
+        setSimulations(data);
+      } catch {
+        setSimulations([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchSimulations();
+  }, []);
+
+  const filtered = simulations.filter(sim =>
+    sim.name.toLowerCase().includes(search.toLowerCase()) ||
+    sim.owner.toLowerCase().includes(search.toLowerCase()) ||
+    String(sim.id).includes(search)
+  );
+
+  // ... (rest of the component remains the same, but use filtered instead of mockSimulations)
+};
+```
+
+---
+
+**User**
+
+yes
+
+---
+
+**Cursor**
+
+```typescript
+import { Router } from 'express';
+import prisma from '../db';
+
+const router = Router();
+
+router.get('/', async (req, res) => {
+  try {
+    const simulations = await prisma.simulation.findMany({
+      include: { owner: true }
+    });
+    res.json(simulations.map(sim => ({
+      id: sim.id,
+      name: sim.name,
+      owner: sim.owner?.username || 'Unknown'
+    })));
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch simulations' });
+  }
+});
+
+export default router;
+
+```
+
+```typescript
+import { Router } from 'express';
+import authRouter from './auth';
+import simulationsRouter from './simulations';
+
+const router = Router();
+
+router.use('/auth', authRouter);
+router.use('/simulations', simulationsRouter);
+
+export default router;
+
+```
+
+```typescriptreact
+import React, { useState, useEffect } from 'react';
+import { API_BASE_URL } from '../../../config';
+
+const Dashboard: React.FC = () => {
+  const [search, setSearch] = useState('');
+  const [simulations, setSimulations] = useState<{id: number, name: string, owner: string}[]>([]);
+  const [loading, setLoading] = useState(true);
+  const user = { username: 'johndoe' };
+
+  useEffect(() => {
+    const fetchSimulations = async () => {
+      setLoading(true);
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/simulations`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token') || ''}`
+          }
+        });
+        const data = await res.json();
+        setSimulations(data);
+      } catch {
+        setSimulations([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchSimulations();
+  }, []);
+
+  const filtered = simulations.filter(sim =>
+    sim.name.toLowerCase().includes(search.toLowerCase()) ||
+    sim.owner.toLowerCase().includes(search.toLowerCase()) ||
+    String(sim.id).includes(search)
+  );
+
+  return (
+    <div style={{ maxWidth: 700, margin: '40px auto', padding: 24, border: '1px solid #ccc', borderRadius: 8 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+        <span><b>User:</b> {user.username}</span>
+        <button>Logout</button>
+      </div>
+      <button style={{ marginBottom: 16 }}>Create Simulation</button>
+      <div style={{ marginBottom: 16 }}>
+        <b>Simulations:</b>
+        {loading ? (
+          <div>Loading...</div>
+        ) : (
+          <table style={{ width: '100%', marginTop: 8, borderCollapse: 'collapse' }}>
+            <thead>
+              <tr style={{ background: '#f5f5f5' }}>
+                <th style={{ border: '1px solid #ccc', padding: 6 }}>ID</th>
+                <th style={{ border: '1px solid #ccc', padding: 6 }}>Name</th>
+                <th style={{ border: '1px solid #ccc', padding: 6 }}>Owner</th>
+                <th style={{ border: '1px solid #ccc', padding: 6 }}>Join</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filtered.map(sim => (
+                <tr key={sim.id}>
+                  <td style={{ border: '1px solid #ccc', padding: 6 }}>{sim.id}</td>
+                  <td style={{ border: '1px solid #ccc', padding: 6 }}>{sim.name}</td>
+                  <td style={{ border: '1px solid #ccc', padding: 6 }}>{sim.owner}</td>
+                  <td style={{ border: '1px solid #ccc', padding: 6 }}>
+                    <button style={{ marginRight: 8 }}>Instructor</button>
+                    <button>Team</button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+        <div style={{ marginTop: 12 }}>
+          <label>Search: </label>
+          <input
+            type="text"
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            style={{ padding: 6, width: 200 }}
+            placeholder="Search simulations..."
+          />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Dashboard;
+
+```
+
+Your dashboard is now connected to real data:
+
+- The backend exposes a `GET /api/simulations` endpoint returning all simulations with their owner.
+- The frontend dashboard fetches this data and displays it, showing a loading state while fetching.
+
+You can now see live simulation data on the dashboard.  
+Let me know if you want to add authentication, implement create/join actions, or further enhance the dashboard!
+
+---
+
+**User**
+
+protect endpoints
+
+---
+
+**Cursor**
+
+To protect your backend endpoints, you should implement JWT authentication middleware. Here’s a concise plan and implementation:
+
+---
+
+## 1. **Create Auth Middleware**
+
+Add a middleware to verify JWT tokens in `Authorization: Bearer <token>` headers.
+
+**Example: `api/src/middleware/auth.ts`**
+```ts
+import { Request, Response, NextFunction } from 'express';
+import jwt from 'jsonwebtoken';
+
+export function authenticateToken(req: Request, res: Response, next: NextFunction) {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+  if (!token) return res.status(401).json({ error: 'Missing token' });
+
+  jwt.verify(token, process.env.JWT_SECRET || 'changeme', (err, user) => {
+    if (err) return res.status(403).json({ error: 'Invalid token' });
+    (req as any).user = user;
+    next();
+  });
+}
+```
+
+---
+
+## 2. **Apply Middleware to Protected Routes**
+
+For example, to protect `/api/simulations`:
+
+**In `api/src/api/simulations.ts`:**
+```ts
+import { authenticateToken } from '../middleware/auth';
+
+// ... existing code ...
+
+router.get('/', authenticateToken, async (req, res) => {
+  // ... existing code ...
+});
+```
+
+You can also protect other routes as needed.
+
+---
+
+## 3. **Frontend: Send JWT in Authorization Header**
+
+You already send the token in the dashboard fetch:
+```js
+headers: {
+  Authorization: `Bearer ${localStorage.getItem('token') || ''}`
+}
+```
+No changes needed here.
+
+---
+
+**Would you like me to add the middleware and update your simulations endpoint to require authentication?**
+
+```typescript
+import { Request, Response, NextFunction } from 'express';
+import jwt from 'jsonwebtoken';
+
+export function authenticateToken(req: Request, res: Response, next: NextFunction) {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+  if (!token) return res.status(401).json({ error: 'Missing token' });
+
+  jwt.verify(token, process.env.JWT_SECRET || 'changeme', (err, user) => {
+    if (err) return res.status(403).json({ error: 'Invalid token' });
+    (req as any).user = user;
+    next();
+  });
+}
+```
+
+```typescript
+import { authenticateToken } from '../middleware/auth';
+
+// ... existing code ...
+
+router.get('/', authenticateToken, async (req, res) => {
+  // ... existing code ...
+});
+```
+
+```javascript
+headers: {
+  Authorization: `Bearer ${localStorage.getItem('token') || ''}`
+}
+```
+
+---
+
+**User**
+
+yes
+
+---
+
+**Cursor**
+
+```typescript
+import { Request, Response, NextFunction } from 'express';
+import jwt from 'jsonwebtoken';
+
+export function authenticateToken(req: Request, res: Response, next: NextFunction) {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+  if (!token) return res.status(401).json({ error: 'Missing token' });
+
+  jwt.verify(token, process.env.JWT_SECRET || 'changeme', (err, user) => {
+    if (err) return res.status(403).json({ error: 'Invalid token' });
+    (req as any).user = user;
+    next();
+  });
+}
+
+```
+
+```typescript
+import { Router } from 'express';
+import prisma from '../db';
+import { authenticateToken } from '../middleware/auth';
+
+const router = Router();
+
+router.get('/', authenticateToken, async (req, res) => {
+  try {
+    const simulations = await prisma.simulation.findMany({
+      include: { owner: true }
+    });
+    res.json(simulations.map(sim => ({
+      id: sim.id,
+      name: sim.name,
+      owner: sim.owner?.username || 'Unknown'
+    })));
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch simulations' });
+  }
+});
+
+export default router;
+
+```
+
+Your backend now protects the `/api/simulations` endpoint with JWT authentication:
+
+- The `authenticateToken` middleware checks for a valid JWT in the `Authorization` header.
+- If the token is missing or invalid, the endpoint returns a 401 or 403 error.
+- The dashboard frontend already sends the token, so no changes are needed there.
+
+Let me know if you want to protect more endpoints, add role-based access, or handle token expiration!
+
+---
+
+**User**
+
+update swagger
+
+---
+
+**Cursor**
+
+```typescript
+/**
+ * @swagger
+ * /api/simulations:
+ *   get:
+ *     summary: Get all simulations
+ *     tags: [Simulations]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: List of simulations
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id:
+ *                     type: integer
+ *                   name:
+ *                     type: string
+ *                   owner:
+ *                     type: string
+ *       401:
+ *         description: Missing or invalid token
+ */
+import { Router } from 'express';
+import prisma from '../db';
+import { authenticateToken } from '../middleware/auth';
+
+const router = Router();
+
+router.get('/', authenticateToken, async (req, res) => {
+  try {
+    const simulations = await prisma.simulation.findMany({
+      include: { owner: true }
+    });
+    res.json(simulations.map(sim => ({
+      id: sim.id,
+      name: sim.name,
+      owner: sim.owner?.username || 'Unknown'
+    })));
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch simulations' });
+  }
+});
+
+export default router;
+
+```
+
+```typescript
+import swaggerJSDoc from 'swagger-jsdoc';
+import swaggerUi from 'swagger-ui-express';
+
+const options = {
+  definition: {
+    openapi: '3.0.0',
+    info: {
+      title: 'Restaurant Simulator API',
+      version: '1.0.0',
+      description: 'API documentation for the Restaurant Simulator backend',
+    },
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT',
+        },
+      },
+    },
+    security: [{ bearerAuth: [] }],
+  },
+  apis: ['./src/api/**/*.ts'], // Path to the API docs
+};
+
+export const swaggerSpec = swaggerJSDoc(options);
+export { swaggerUi };
+
+```
+
+Swagger documentation now reflects authentication requirements:
+
+- The `/api/simulations` endpoint is documented as requiring a Bearer token (JWT) in the `Authorization` header.
+- The Swagger spec includes a `bearerAuth` security scheme for JWT authentication.
+
+You can now use the "Authorize" button in Swagger UI to enter your JWT and test protected endpoints.
+
+Let me know if you want to document more endpoints or further enhance your API docs!
+
+---
+
+**User**
+
+forward to login if not authenticated when trying to access dashboard
+
+---
+
+**Cursor**
+
+```typescriptreact
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import Login from './features/auth/Login';
+import Dashboard from './features/dashboard/Dashboard';
+
+const RequireAuth: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const token = localStorage.getItem('token');
+  if (!token) return <Navigate to="/login" replace />;
+  return <>{children}</>;
+};
+
+const App: React.FC = () => (
+  <Router>
+    <Routes>
+      <Route path="/login" element={<Login />} />
+      <Route path="/dashboard" element={
+        <RequireAuth>
+          <Dashboard />
+        </RequireAuth>
+      } />
+      <Route path="*" element={<Navigate to="/login" replace />} />
+    </Routes>
+  </Router>
+);
+
+export default App;
+
+```
+
+Now, if a user tries to access `/dashboard` without being authenticated (no token in localStorage), they will be automatically redirected to the login page.
+
+Let me know if you want to protect other routes, handle token expiration, or add logout functionality!
+
+---
+
+**User**
+
+implement logout functionality
+
+---
+
+**Cursor**
+
+```typescriptreact
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { API_BASE_URL } from '../../../config';
+
+const Dashboard: React.FC = () => {
+  const [search, setSearch] = useState('');
+  const [simulations, setSimulations] = useState<{id: number, name: string, owner: string}[]>([]);
+  const [loading, setLoading] = useState(true);
+  const user = { username: 'johndoe' };
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchSimulations = async () => {
+      setLoading(true);
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/simulations`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token') || ''}`
+          }
+        });
+        const data = await res.json();
+        setSimulations(data);
+      } catch {
+        setSimulations([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchSimulations();
+  }, []);
+
+  const filtered = simulations.filter(sim =>
+    sim.name.toLowerCase().includes(search.toLowerCase()) ||
+    sim.owner.toLowerCase().includes(search.toLowerCase()) ||
+    String(sim.id).includes(search)
+  );
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    navigate('/login');
+  };
+
+  return (
+    <div style={{ maxWidth: 700, margin: '40px auto', padding: 24, border: '1px solid #ccc', borderRadius: 8 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+        <span><b>User:</b> {user.username}</span>
+        <button onClick={handleLogout}>Logout</button>
+      </div>
+      <button style={{ marginBottom: 16 }}>Create Simulation</button>
+      <div style={{ marginBottom: 16 }}>
+        <b>Simulations:</b>
+        {loading ? (
+          <div>Loading...</div>
+        ) : (
+          <table style={{ width: '100%', marginTop: 8, borderCollapse: 'collapse' }}>
+            <thead>
+              <tr style={{ background: '#f5f5f5' }}>
+                <th style={{ border: '1px solid #ccc', padding: 6 }}>ID</th>
+                <th style={{ border: '1px solid #ccc', padding: 6 }}>Name</th>
+                <th style={{ border: '1px solid #ccc', padding: 6 }}>Owner</th>
+                <th style={{ border: '1px solid #ccc', padding: 6 }}>Join</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filtered.map(sim => (
+                <tr key={sim.id}>
+                  <td style={{ border: '1px solid #ccc', padding: 6 }}>{sim.id}</td>
+                  <td style={{ border: '1px solid #ccc', padding: 6 }}>{sim.name}</td>
+                  <td style={{ border: '1px solid #ccc', padding: 6 }}>{sim.owner}</td>
+                  <td style={{ border: '1px solid #ccc', padding: 6 }}>
+                    <button style={{ marginRight: 8 }}>Instructor</button>
+                    <button>Team</button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+        <div style={{ marginTop: 12 }}>
+          <label>Search: </label>
+          <input
+            type="text"
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            style={{ padding: 6, width: 200 }}
+            placeholder="Search simulations..."
+          />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Dashboard;
+
+```
+
+Logout functionality is now implemented:
+
+- Clicking the "Logout" button on the dashboard will clear the JWT token from localStorage and redirect the user to the login page.
+
+Let me know if you want to add a logout button elsewhere, clear more user data, or show a confirmation dialog!
+
+---
+
+**User**
+
+ populate admin user credentials by default on login page when in development mode
+
+---
+
+**Cursor**
+
+```typescriptreact
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { API_BASE_URL } from '../../../config';
+
+const isDev = process.env.NODE_ENV !== 'production';
+
+const Login: React.FC = () => {
+  const [email, setEmail] = useState(isDev ? 'admin@example.com' : '');
+  const [password, setPassword] = useState(isDev ? 'password' : '');
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        setError(data.error || 'Login failed');
+        setLoading(false);
+        return;
+      }
+
+      const data = await res.json();
+      localStorage.setItem('token', data.token);
+      // Optionally store user info as well
+      // localStorage.setItem('user', JSON.stringify(data.user));
+      navigate('/dashboard');
+    } catch (err) {
+      setError('Network error');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div style={{ maxWidth: 400, margin: '40px auto', padding: 24, border: '1px solid #ccc', borderRadius: 8 }}>
+      <h2 style={{ textAlign: 'center' }}>Restaurant Simulator</h2>
+      <form onSubmit={handleLogin}>
+        <div style={{ marginBottom: 16 }}>
+          <label>Email:</label>
+          <input
+            type="email"
+            value={email}
+            onChange={e => setEmail(e.target.value)}
+            style={{ width: '100%', padding: 8, marginTop: 4 }}
+            required
+          />
+        </div>
+        <div style={{ marginBottom: 16 }}>
+          <label>Password:</label>
+          <input
+            type="password"
+            value={password}
+            onChange={e => setPassword(e.target.value)}
+            style={{ width: '100%', padding: 8, marginTop: 4 }}
+            required
+          />
+        </div>
+        {error && <div style={{ color: 'red', marginBottom: 16 }}>{error}</div>}
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
+          <button type="submit" disabled={loading}>{loading ? 'Logging in...' : 'Login'}</button>
+          <button type="button" disabled={loading}>Sign Up</button>
+        </div>
+        <div style={{ textAlign: 'right' }}>
+          <a href="#">Forgot password?</a>
+        </div>
+      </form>
+    </div>
+  );
+};
+
+export default Login;
+
+```
+
+Now, when running in development mode, the login page will prefill the admin user credentials (`admin@example.com` / `password`) by default.
+
+This makes local development and testing faster.  
+Let me know if you want to prefill other roles, or add a visible hint for test credentials!
+
+---
+
+**User**
+
+implement create simulation page
+
+---
+
+**Cursor**
+
+```typescriptreact
+import React, { useState } from 'react';
+
+interface Team {
+  name: string;
+  password: string;
+}
+
+const CreateSimulation: React.FC = () => {
+  const [name, setName] = useState('');
+  const [numTeams, setNumTeams] = useState(2);
+  const [teams, setTeams] = useState<Team[]>([
+    { name: '', password: '' },
+    { name: '', password: '' },
+  ]);
+  const [restaurantProfile, setRestaurantProfile] = useState('');
+  const [marketModel, setMarketModel] = useState('');
+
+  const handleNumTeamsChange = (n: number) => {
+    setNumTeams(n);
+    setTeams(prev => {
+      const copy = [...prev];
+      if (n > copy.length) {
+        return [...copy, ...Array(n - copy.length).fill({ name: '', password: '' })];
+      } else {
+        return copy.slice(0, n);
+      }
+    });
+  };
+
+  const handleTeamChange = (idx: number, field: keyof Team, value: string) => {
+    setTeams(prev => prev.map((t, i) => i === idx ? { ...t, [field]: value } : t));
+  };
+
+  const addTeam = () => {
+    setNumTeams(n => n + 1);
+    setTeams(prev => [...prev, { name: '', password: '' }]);
+  };
+
+  const removeTeam = () => {
+    if (numTeams > 1) {
+      setNumTeams(n => n - 1);
+      setTeams(prev => prev.slice(0, -1));
+    }
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    // TODO: Implement API call to create simulation
+    alert('Simulation created!');
+  };
+
+  return (
+    <div style={{ maxWidth: 700, margin: '40px auto', padding: 24, border: '1px solid #ccc', borderRadius: 8 }}>
+      <h2 style={{ textAlign: 'center', marginBottom: 24 }}>Create New Simulation</h2>
+      <form onSubmit={handleSubmit}>
+        <div style={{ marginBottom: 16 }}>
+          <label>Simulation Name: </label>
+          <input
+            type="text"
+            value={name}
+            onChange={e => setName(e.target.value)}
+            style={{ padding: 6, width: 250, marginLeft: 8 }}
+            required
+          />
+        </div>
+        <div style={{ marginBottom: 16 }}>
+          <label>Number of Teams: </label>
+          <input
+            type="number"
+            min={1}
+            value={numTeams}
+            onChange={e => handleNumTeamsChange(Number(e.target.value))}
+            style={{ padding: 6, width: 60, marginLeft: 8 }}
+            required
+          />
+        </div>
+        <div style={{ marginBottom: 16 }}>
+          <b>Team Setup:</b>
+          <table style={{ width: '100%', marginTop: 8, borderCollapse: 'collapse' }}>
+            <thead>
+              <tr style={{ background: '#f5f5f5' }}>
+                <th style={{ border: '1px solid #ccc', padding: 6 }}>Team #</th>
+                <th style={{ border: '1px solid #ccc', padding: 6 }}>Team Name</th>
+                <th style={{ border: '1px solid #ccc', padding: 6 }}>Team Password</th>
+              </tr>
+            </thead>
+            <tbody>
+              {teams.map((team, idx) => (
+                <tr key={idx}>
+                  <td style={{ border: '1px solid #ccc', padding: 6 }}>{idx + 1}</td>
+                  <td style={{ border: '1px solid #ccc', padding: 6 }}>
+                    <input
+                      type="text"
+                      value={team.name}
+                      onChange={e => handleTeamChange(idx, 'name', e.target.value)}
+                      style={{ padding: 6, width: 120 }}
+                      required
+                    />
+                  </td>
+                  <td style={{ border: '1px solid #ccc', padding: 6 }}>
+                    <input
+                      type="text"
+                      value={team.password}
+                      onChange={e => handleTeamChange(idx, 'password', e.target.value)}
+                      style={{ padding: 6, width: 120 }}
+                      required
+                    />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <div style={{ marginTop: 8 }}>
+            <button type="button" onClick={addTeam} style={{ marginRight: 8 }}>Add Team</button>
+            <button type="button" onClick={removeTeam}>Remove Team</button>
+          </div>
+        </div>
+        <div style={{ marginBottom: 16 }}>
+          <label>Restaurant Profile: </label>
+          <select value={restaurantProfile} onChange={e => setRestaurantProfile(e.target.value)} style={{ padding: 6, marginLeft: 8 }}>
+            <option value="">Import</option>
+            <option value="profile1">Profile 1</option>
+            <option value="profile2">Profile 2</option>
+          </select>
+        </div>
+        <div style={{ marginBottom: 24 }}>
+          <label>Market Model: </label>
+          <select value={marketModel} onChange={e => setMarketModel(e.target.value)} style={{ padding: 6, marginLeft: 8 }}>
+            <option value="">Import</option>
+            <option value="model1">Model 1</option>
+            <option value="model2">Model 2</option>
+          </select>
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'center', gap: 16 }}>
+          <button type="submit">Create Simulation</button>
+          <button type="button">Cancel</button>
+        </div>
+      </form>
+    </div>
+  );
+};
+
+export default CreateSimulation;
+
+```
+
+The Create Simulation page is now implemented according to your wireframe:
+
+- Simulation name and number of teams inputs
+- Team setup table with name and password for each team, add/remove team buttons
+- Restaurant profile and market model import dropdowns
+- Create and Cancel buttons
+
+This uses local state only for now.  
+Let me know if you want to connect this to your backend, add navigation, or handle form submission!
+
+---
+
+**User**
+
+connect to link on dashboard
+
+---
+
+**Cursor**
+
+```typescriptreact
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { API_BASE_URL } from '../../../config';
+
+const Dashboard: React.FC = () => {
+  const [search, setSearch] = useState('');
+  const [simulations, setSimulations] = useState<{id: number, name: string, owner: string}[]>([]);
+  const [loading, setLoading] = useState(true);
+  const user = { username: 'johndoe' };
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchSimulations = async () => {
+      setLoading(true);
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/simulations`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token') || ''}`
+          }
+        });
+        const data = await res.json();
+        setSimulations(data);
+      } catch {
+        setSimulations([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchSimulations();
+  }, []);
+
+  const filtered = simulations.filter(sim =>
+    sim.name.toLowerCase().includes(search.toLowerCase()) ||
+    sim.owner.toLowerCase().includes(search.toLowerCase()) ||
+    String(sim.id).includes(search)
+  );
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    navigate('/login');
+  };
+
+  const handleCreateSimulation = () => {
+    navigate('/create-simulation');
+  };
+
+  return (
+    <div style={{ maxWidth: 700, margin: '40px auto', padding: 24, border: '1px solid #ccc', borderRadius: 8 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+        <span><b>User:</b> {user.username}</span>
+        <button onClick={handleLogout}>Logout</button>
+      </div>
+      <button style={{ marginBottom: 16 }} onClick={handleCreateSimulation}>Create Simulation</button>
+      <div style={{ marginBottom: 16 }}>
+        <b>Simulations:</b>
+        {loading ? (
+          <div>Loading...</div>
+        ) : (
+          <table style={{ width: '100%', marginTop: 8, borderCollapse: 'collapse' }}>
+            <thead>
+              <tr style={{ background: '#f5f5f5' }}>
+                <th style={{ border: '1px solid #ccc', padding: 6 }}>ID</th>
+                <th style={{ border: '1px solid #ccc', padding: 6 }}>Name</th>
+                <th style={{ border: '1px solid #ccc', padding: 6 }}>Owner</th>
+                <th style={{ border: '1px solid #ccc', padding: 6 }}>Join</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filtered.map(sim => (
+                <tr key={sim.id}>
+                  <td style={{ border: '1px solid #ccc', padding: 6 }}>{sim.id}</td>
+                  <td style={{ border: '1px solid #ccc', padding: 6 }}>{sim.name}</td>
+                  <td style={{ border: '1px solid #ccc', padding: 6 }}>{sim.owner}</td>
+                  <td style={{ border: '1px solid #ccc', padding: 6 }}>
+                    <button style={{ marginRight: 8 }}>Instructor</button>
+                    <button>Team</button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+        <div style={{ marginTop: 12 }}>
+          <label>Search: </label>
+          <input
+            type="text"
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            style={{ padding: 6, width: 200 }}
+            placeholder="Search simulations..."
+          />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Dashboard;
+
+```
+
+```typescriptreact
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import Login from './features/auth/Login';
+import Dashboard from './features/dashboard/Dashboard';
+import CreateSimulation from './features/simulation/CreateSimulation';
+
+const RequireAuth: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const token = localStorage.getItem('token');
+  if (!token) return <Navigate to="/login" replace />;
+  return <>{children}</>;
+};
+
+const App: React.FC = () => (
+  <Router>
+    <Routes>
+      <Route path="/login" element={<Login />} />
+      <Route path="/dashboard" element={
+        <RequireAuth>
+          <Dashboard />
+        </RequireAuth>
+      } />
+      <Route path="/create-simulation" element={
+        <RequireAuth>
+          <CreateSimulation />
+        </RequireAuth>
+      } />
+      <Route path="*" element={<Navigate to="/login" replace />} />
+    </Routes>
+  </Router>
+);
+
+export default App;
+
+```
+
+The "Create Simulation" button on the dashboard now navigates to the Create Simulation page, and the route is protected (requires authentication).
+
+You can now access the simulation creation form from the dashboard.  
+Let me know if you want to connect the form to your backend, handle form submission, or add navigation after creation!
+
+---
+
+**User**
+
+connect to backend
+
+---
+
+**Cursor**
+
+To connect the Create Simulation page to your backend, you need:
+
+1. **A backend endpoint** to create a simulation (e.g., `POST /api/simulations`).
+2. **Frontend logic** to send the form data to this endpoint, including the JWT token for authentication.
+
+---
+
+## 1. Backend: Add Create Simulation Endpoint
+
+In `api/src/api/simulations.ts`, add:
+
+```ts
+router.post('/', authenticateToken, async (req, res) => {
+  try {
+    const { name, teams, restaurantProfile, marketModel } = req.body;
+    const ownerId = (req as any).user.userId;
+
+    // Create restaurant and market (mock for now)
+    const restaurant = await prisma.restaurant.create({
+      data: {
+        name: restaurantProfile || 'Default Restaurant',
+        background: '',
+        balanceSheet: {},
+      },
+    });
+    const market = await prisma.market.create({
+      data: {
+        customerRevenue: 0,
+        inflation: 0,
+        depreciation: 0,
+        staffTurnover: 0,
+        season: '',
+        events: {},
+      },
+    });
+
+    // Create simulation
+    const simulation = await prisma.simulation.create({
+      data: {
+        name,
+        ownerId,
+        restaurantId: restaurant.id,
+        marketId: market.id,
+      },
+    });
+
+    // Create teams
+    for (const team of teams) {
+      await prisma.team.create({
+        data: {
+          name: team.name,
+          password: team.password,
+          simulationId: simulation.id,
+          userId: ownerId, // or assign to different users as needed
+        },
+      });
+    }
+
+    res.status(201).json({ id: simulation.id });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to create simulation' });
+  }
+});
+```
+
+---
+
+## 2. Frontend: Submit Form to Backend
+
+In `CreateSimulation.tsx`, update `handleSubmit`:
+
+```tsx
+import { API_BASE_URL } from '../../../config';
+// ...rest of imports
+
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  try {
+    const res = await fetch(`${API_BASE_URL}/api/simulations`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${localStorage.getItem('token') || ''}`,
+      },
+      body: JSON.stringify({
+        name,
+        teams,
+        restaurantProfile,
+        marketModel,
+      }),
+    });
+    if (!res.ok) {
+      alert('Failed to create simulation');
+      return;
+    }
+    const data = await res.json();
+    alert('Simulation created!');
+    // Optionally redirect to dashboard or simulation page
+  } catch {
+    alert('Network error');
+  }
+};
+```
+
+---
+
+**Would you like me to implement both the backend endpoint and the frontend connection for you?**
+
+```typescript
+router.post('/', authenticateToken, async (req, res) => {
+  try {
+    const { name, teams, restaurantProfile, marketModel } = req.body;
+    const ownerId = (req as any).user.userId;
+
+    // Create restaurant and market (mock for now)
+    const restaurant = await prisma.restaurant.create({
+      data: {
+        name: restaurantProfile || 'Default Restaurant',
+        background: '',
+        balanceSheet: {},
+      },
+    });
+    const market = await prisma.market.create({
+      data: {
+        customerRevenue: 0,
+        inflation: 0,
+        depreciation: 0,
+        staffTurnover: 0,
+        season: '',
+        events: {},
+      },
+    });
+
+    // Create simulation
+    const simulation = await prisma.simulation.create({
+      data: {
+        name,
+        ownerId,
+        restaurantId: restaurant.id,
+        marketId: market.id,
+      },
+    });
+
+    // Create teams
+    for (const team of teams) {
+      await prisma.team.create({
+        data: {
+          name: team.name,
+          password: team.password,
+          simulationId: simulation.id,
+          userId: ownerId, // or assign to different users as needed
+        },
+      });
+    }
+
+    res.status(201).json({ id: simulation.id });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to create simulation' });
+  }
+});
+```
+
+```typescriptreact
+import { API_BASE_URL } from '../../../config';
+// ...rest of imports
+
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  try {
+    const res = await fetch(`${API_BASE_URL}/api/simulations`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${localStorage.getItem('token') || ''}`,
+      },
+      body: JSON.stringify({
+        name,
+        teams,
+        restaurantProfile,
+        marketModel,
+      }),
+    });
+    if (!res.ok) {
+      alert('Failed to create simulation');
+      return;
+    }
+    const data = await res.json();
+    alert('Simulation created!');
+    // Optionally redirect to dashboard or simulation page
+  } catch {
+    alert('Network error');
+  }
+};
+```
+
+---
+
+**User**
+
+yes
+
+---
+
+**Cursor**
+
+```typescript
+import { Router } from 'express';
+import prisma from '../db';
+import { authenticateToken } from '../middleware/auth';
+
+/**
+ * @swagger
+ * /api/simulations:
+ *   get:
+ *     summary: Get all simulations
+ *     tags: [Simulations]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: List of simulations
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id:
+ *                     type: integer
+ *                   name:
+ *                     type: string
+ *                   owner:
+ *                     type: string
+ *       401:
+ *         description: Missing or invalid token
+ */
+const router = Router();
+
+router.get('/', authenticateToken, async (req, res) => {
+  try {
+    const simulations = await prisma.simulation.findMany({
+      include: { owner: true }
+    });
+    res.json(simulations.map(sim => ({
+      id: sim.id,
+      name: sim.name,
+      owner: sim.owner?.username || 'Unknown'
+    })));
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch simulations' });
+  }
+});
+
+/**
+ * @swagger
+ * /api/simulations:
+ *   post:
+ *     summary: Create a new simulation
+ *     tags: [Simulations]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               teams:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     name:
+ *                       type: string
+ *                     password:
+ *                       type: string
+ *               restaurantProfile:
+ *                 type: string
+ *               marketModel:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Simulation created
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: integer
+ *       500:
+ *         description: Failed to create simulation
+ */
+router.post('/', authenticateToken, async (req, res) => {
+  try {
+    const { name, teams, restaurantProfile, marketModel } = req.body;
+    const ownerId = (req as any).user.userId;
+
+    // Create restaurant and market (mock for now)
+    const restaurant = await prisma.restaurant.create({
+      data: {
+        name: restaurantProfile || 'Default Restaurant',
+        background: '',
+        balanceSheet: {},
+      },
+    });
+    const market = await prisma.market.create({
+      data: {
+        customerRevenue: 0,
+        inflation: 0,
+        depreciation: 0,
+        staffTurnover: 0,
+        season: '',
+        events: {},
+      },
+    });
+
+    // Create simulation
+    const simulation = await prisma.simulation.create({
+      data: {
+        name,
+        ownerId,
+        restaurantId: restaurant.id,
+        marketId: market.id,
+      },
+    });
+
+    // Create teams
+    for (const team of teams) {
+      await prisma.team.create({
+        data: {
+          name: team.name,
+          password: team.password,
+          simulationId: simulation.id,
+          userId: ownerId, // or assign to different users as needed
+        },
+      });
+    }
+
+    res.status(201).json({ id: simulation.id });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to create simulation' });
+  }
+});
+
+export default router;
+
+```
+
+```typescriptreact
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { API_BASE_URL } from '../../../config';
+
+interface Team {
+  name: string;
+  password: string;
+}
+
+const CreateSimulation: React.FC = () => {
+  const [name, setName] = useState('');
+  const [numTeams, setNumTeams] = useState(2);
+  const [teams, setTeams] = useState<Team[]>([
+    { name: '', password: '' },
+    { name: '', password: '' },
+  ]);
+  const [restaurantProfile, setRestaurantProfile] = useState('');
+  const [marketModel, setMarketModel] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
+
+  const handleNumTeamsChange = (n: number) => {
+    setNumTeams(n);
+    setTeams(prev => {
+      const copy = [...prev];
+      if (n > copy.length) {
+        return [...copy, ...Array(n - copy.length).fill({ name: '', password: '' })];
+      } else {
+        return copy.slice(0, n);
+      }
+    });
+  };
+
+  const handleTeamChange = (idx: number, field: keyof Team, value: string) => {
+    setTeams(prev => prev.map((t, i) => i === idx ? { ...t, [field]: value } : t));
+  };
+
+  const addTeam = () => {
+    setNumTeams(n => n + 1);
+    setTeams(prev => [...prev, { name: '', password: '' }]);
+  };
+
+  const removeTeam = () => {
+    if (numTeams > 1) {
+      setNumTeams(n => n - 1);
+      setTeams(prev => prev.slice(0, -1));
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/simulations`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token') || ''}`,
+        },
+        body: JSON.stringify({
+          name,
+          teams,
+          restaurantProfile,
+          marketModel,
+        }),
+      });
+      if (!res.ok) {
+        setError('Failed to create simulation');
+        setLoading(false);
+        return;
+      }
+      // Optionally redirect or show success
+      navigate('/dashboard');
+    } catch {
+      setError('Network error');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div style={{ maxWidth: 700, margin: '40px auto', padding: 24, border: '1px solid #ccc', borderRadius: 8 }}>
+      <h2 style={{ textAlign: 'center', marginBottom: 24 }}>Create New Simulation</h2>
+      <form onSubmit={handleSubmit}>
+        <div style={{ marginBottom: 16 }}>
+          <label>Simulation Name: </label>
+          <input
+            type="text"
+            value={name}
+            onChange={e => setName(e.target.value)}
+            style={{ padding: 6, width: 250, marginLeft: 8 }}
+            required
+          />
+        </div>
+        <div style={{ marginBottom: 16 }}>
+          <label>Number of Teams: </label>
+          <input
+            type="number"
+            min={1}
+            value={numTeams}
+            onChange={e => handleNumTeamsChange(Number(e.target.value))}
+            style={{ padding: 6, width: 60, marginLeft: 8 }}
+            required
+          />
+        </div>
+        <div style={{ marginBottom: 16 }}>
+          <b>Team Setup:</b>
+          <table style={{ width: '100%', marginTop: 8, borderCollapse: 'collapse' }}>
+            <thead>
+              <tr style={{ background: '#f5f5f5' }}>
+                <th style={{ border: '1px solid #ccc', padding: 6 }}>Team #</th>
+                <th style={{ border: '1px solid #ccc', padding: 6 }}>Team Name</th>
+                <th style={{ border: '1px solid #ccc', padding: 6 }}>Team Password</th>
+              </tr>
+            </thead>
+            <tbody>
+              {teams.map((team, idx) => (
+                <tr key={idx}>
+                  <td style={{ border: '1px solid #ccc', padding: 6 }}>{idx + 1}</td>
+                  <td style={{ border: '1px solid #ccc', padding: 6 }}>
+                    <input
+                      type="text"
+                      value={team.name}
+                      onChange={e => handleTeamChange(idx, 'name', e.target.value)}
+                      style={{ padding: 6, width: 120 }}
+                      required
+                    />
+                  </td>
+                  <td style={{ border: '1px solid #ccc', padding: 6 }}>
+                    <input
+                      type="text"
+                      value={team.password}
+                      onChange={e => handleTeamChange(idx, 'password', e.target.value)}
+                      style={{ padding: 6, width: 120 }}
+                      required
+                    />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <div style={{ marginTop: 8 }}>
+            <button type="button" onClick={addTeam} style={{ marginRight: 8 }}>Add Team</button>
+            <button type="button" onClick={removeTeam}>Remove Team</button>
+          </div>
+        </div>
+        <div style={{ marginBottom: 16 }}>
+          <label>Restaurant Profile: </label>
+          <select value={restaurantProfile} onChange={e => setRestaurantProfile(e.target.value)} style={{ padding: 6, marginLeft: 8 }}>
+            <option value="">Import</option>
+            <option value="profile1">Profile 1</option>
+            <option value="profile2">Profile 2</option>
+          </select>
+        </div>
+        <div style={{ marginBottom: 24 }}>
+          <label>Market Model: </label>
+          <select value={marketModel} onChange={e => setMarketModel(e.target.value)} style={{ padding: 6, marginLeft: 8 }}>
+            <option value="">Import</option>
+            <option value="model1">Model 1</option>
+            <option value="model2">Model 2</option>
+          </select>
+        </div>
+        {error && <div style={{ color: 'red', marginBottom: 16 }}>{error}</div>}
+        <div style={{ display: 'flex', justifyContent: 'center', gap: 16 }}>
+          <button type="submit" disabled={loading}>{loading ? 'Creating...' : 'Create Simulation'}</button>
+          <button type="button" onClick={() => navigate('/dashboard')}>Cancel</button>
+        </div>
+      </form>
+    </div>
+  );
+};
+
+export default CreateSimulation;
+
+```
+
+The Create Simulation page is now fully connected to your backend:
+
+- Submits the form to `POST /api/simulations` with JWT authentication.
+- Handles loading and error states.
+- Redirects to the dashboard on success.
+
+You can now create simulations from the UI and see them appear in the dashboard.
+
+Let me know if you want to add validation, show a success message, or further enhance the simulation creation flow!
+
+---
+
+**User**
+
+add simulation seed data
+
+---
+
+**Cursor**
+
+```typescript
+import prisma from '../index';
+import bcrypt from 'bcrypt';
+
+async function main() {
+  // Hash passwords
+  const password = await bcrypt.hash('password', 10);
+
+  // Create Users
+  const [admin, instructor, teamUser] = await Promise.all([
+    prisma.user.upsert({
+      where: { email: 'admin@example.com' },
+      update: {},
+      create: {
+        email: 'admin@example.com',
+        username: 'admin',
+        password,
+        role: 'ADMIN',
+      },
+    }),
+    prisma.user.upsert({
+      where: { email: 'instructor@example.com' },
+      update: {},
+      create: {
+        email: 'instructor@example.com',
+        username: 'instructor1',
+        password,
+        role: 'INSTRUCTOR',
+      },
+    }),
+    prisma.user.upsert({
+      where: { email: 'team1@example.com' },
+      update: {},
+      create: {
+        email: 'team1@example.com',
+        username: 'team1',
+        password,
+        role: 'TEAM',
+      },
+    }),
+  ]);
+
+  // Create Restaurant
+  const restaurant = await prisma.restaurant.create({
+    data: {
+      name: 'The Bistro',
+      background: 'A cozy place for simulation.',
+      balanceSheet: { assets: 10000, liabilities: 5000 },
+    },
+  });
+
+  // Create Market
+  const market = await prisma.market.create({
+    data: {
+      customerRevenue: 2000,
+      inflation: 2.5,
+      depreciation: 1.2,
+      staffTurnover: 0.1,
+      season: 'Spring',
+      events: { event: 'None' },
+    },
+  });
+
+  // Create Simulation
+  const simulation = await prisma.simulation.create({
+    data: {
+      name: 'Demo Simulation',
+      ownerId: admin.id,
+      restaurantId: restaurant.id,
+      marketId: market.id,
+    },
+  });
+
+  // Create Teams
+  await prisma.team.createMany({
+    data: [
+      {
+        name: 'Team A',
+        password,
+        simulationId: simulation.id,
+        userId: teamUser.id,
+      },
+      {
+        name: 'Team B',
+        password,
+        simulationId: simulation.id,
+        userId: admin.id,
+      },
+    ],
+    skipDuplicates: true,
+  });
+
+  console.log('Seeded users, simulation, teams, restaurant, and market!');
+}
+
+main()
+  .catch((e) => {
+    console.error(e);
+    process.exit(1);
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
+  });
+
+```
+
+Your seed script now creates a demo simulation, including:
+
+- Users (admin, instructor, team)
+- Restaurant and market
+- Simulation (owned by admin)
+- Two teams (one for the team user, one for admin)
+
+Run your seed script to populate the database:
+```sh
+npm run db:seed
+```
+
+Let me know if you want to seed more data, add menu items, or further customize the seed logic!
+
+```shellscript
+npm run db:seed
+```
 
