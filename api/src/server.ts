@@ -4,6 +4,7 @@ import { Server as SocketIOServer } from 'socket.io';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import apiRouter from './api';
+import { swaggerSpec, swaggerUi } from './swagger';
 
 dotenv.config();
 
@@ -32,6 +33,11 @@ io.on('connection', (socket) => {
 });
 
 app.use('/api', apiRouter);
+
+if (process.env.NODE_ENV !== 'production') {
+  app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+  console.log('Swagger docs available at /api/docs');
+}
 
 const PORT = process.env.PORT || 4000;
 server.listen(PORT, () => {
